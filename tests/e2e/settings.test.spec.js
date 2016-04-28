@@ -3,6 +3,7 @@ describe("settings:", function() {
   var tabs = require('./tabs.page.js');
 
   it("should have a settings page", function() {
+    //browser.executeScript('localStorage.setItem("forceOAuth", "123")');
     browser.get('http://localhost:3030').then(function() {
       // set oauth info if needed
       if ( typeof(forceOAuth) != "undefined" ) {
@@ -21,13 +22,13 @@ describe("settings:", function() {
 
   it("should have no upgrade available (as no upgrade available)", function() {
     browser.get('http://localhost:3030/www/#/tab/home').then(function() {
-      return browser.sleep(2 * sleepMultiplyer);
+      return browser.sleep(1 * sleepMultiplyer);
     }).then(function(){
       var appSoupStr = JSON.stringify([{"Name":"applicationName","CurrentValue":"MAP-0012001","_soupEntryId":1},{"Name":"userId","CurrentValue":"00000000dUmMyID000","_soupEntryId":2},{"Name":"buildStatus","CurrentValue":"Complete","_soupEntryId":3,"NewValue":"Complete"},{"Name":"buildVersion","CurrentValue":"001","_soupEntryId":4},{"Name":"buildName","CurrentValue":"BIZ001","_soupEntryId":5},{"Name":"buildOS","CurrentValue":"Android","_soupEntryId":6},{"Name":"deviceUuid","CurrentValue":"c86d3e94574debug","_soupEntryId":7},{"Name":"audId","CurrentValue":"a2eR0000000Jv8FIAS","_soupEntryId":8},{"Name":"startPageURL","CurrentValue":"https://cs2.salesforce.com/apex/MobileCaddyDemo_Todd","_soupEntryId":9},{"Name":"sysDataVersion","CurrentValue":"Paul","_soupEntryId":10},{"Name":"sysDataPlatSupVersion","CurrentValue":"Paul","_soupEntryId":11},{"Name":"versionUtilsVersion","CurrentValue":"001","_soupEntryId":12},{"Name":"dynVersionNumber","CurrentValue":"Paul", "_soupEntryId":13},{"Name":"syncRefreshVersion","CurrentValue":"Paul","_soupEntryId":14}]);
       return browser.executeScript("return window.localStorage.setItem('appSoup', '" + appSoupStr + "');");
     }).then(function(){
       tabs.settingsTabItem.click();
-      return browser.sleep(0.5 * sleepMultiplyer);
+      return browser.sleep(0.2 * sleepMultiplyer);
     }).then(function(){
       var myElement = element(by.css('.ion-android-download'));
       expect(myElement.isPresent()).toBeFalsy();
@@ -42,7 +43,7 @@ describe("settings:", function() {
       return browser.executeScript("return window.localStorage.setItem('appSoup', '" + appSoupStr + "');");
     }).then(function(){
       tabs.settingsTabItem.click();
-      return browser.sleep(2 * sleepMultiplyer);
+      return browser.sleep(0.2 * sleepMultiplyer);
     }).then(function(){
       var myElement = element(by.css('.ion-android-download'));
       expect(myElement.isPresent()).toBeTruthy();
