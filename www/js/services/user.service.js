@@ -1,7 +1,8 @@
 /**
  * User Factory
  *
- * @description Handles User
+ * @description User services: sets/gets current user id; sets/gets 'processes' local storage
+ * sync status.
  */
 (function() {
   'use strict';
@@ -10,22 +11,18 @@
     .module('starter.services')
     .factory('UserService', UserService);
 
-  UserService.$inject = ['SyncService', 'logger'];
+  UserService.$inject = ['devUtils', 'logger'];
 
-  function UserService(SyncService, logger) {
-	  return {
-	    getCurrentUserId: getCurrentUserId,
+  function UserService(devUtils, logger) {
 
-	    setCurrentUserId: setCurrentUserId,
+    return {
+      getCurrentUserId: getCurrentUserId,
+      setCurrentUserId: setCurrentUserId,
+      hasDoneProcess: hasDoneProcess,
+      setProcessDone: setProcessDone,
+    };
 
-	    hasDoneProcess: hasDoneProcess,
-
-	    setProcessDone: setProcessDone
-
-	  };
-
-
-	  function getCurrentUserId(){
+    function getCurrentUserId() {
       return new Promise(function(resolve, reject) {
         var currentUserId = localStorage.getItem('currentUserId');
         if (currentUserId !== null) {
@@ -34,27 +31,22 @@
           devUtils.getCurrentUserId().then(function(userId){
             localStorage.setItem('currentUserId', userId);
             resolve(userId);
+          }).catch(function(resObject){
+            logger.log('getCurrentUserId',resObject);
+            reject(resObject);
           });
         }
-      }).catch(function(resObject){
-        logger.error('getCurrentUserId ' + JSON.stringify(resObject));
-        reject(resObject);
       });
     }
 
-
-    function setCurrentUserId(userId){
+    function setCurrentUserId(userId) {
       return new Promise(function(resolve, reject) {
         localStorage.setItem('currentUserId', userId);
         resolve(true);
-      }).catch(function(resObject){
-        logger.error('setCurrentUserId ' + JSON.stringify(resObject));
-        reject(resObject);
       });
     }
 
-
-    function  hasDoneProcess(processName){
+    function hasDoneProcess(processName) {
       return new Promise(function(resolve, reject) {
         var processes = JSON.parse(localStorage.getItem('processes'));
         if (processes === null) {
@@ -66,27 +58,19 @@
             resolve(false);
           }
         }
-      }).catch(function(resObject){
-        logger.error('hasDoneProcess ' + JSON.stringify(resObject));
-        reject(resObject);
       });
     }
 
-
-    function setProcessDone(processName){
+    function setProcessDone(processName) {
       return new Promise(function(resolve, reject) {
-        var processes = localStorage.getItem('processes');
+        logger.log('setProcessDone',processName);
+        var processes = JSON.parse(localStorage.getItem('processes'));
         if (processes === null) {
           processes = {};
-          processes[processName] = "true";
-          localStorage.setItem('processes', JSON.stringify(processes));
-          resolve(true);
-        } else {
-          resolve(true);
         }
-      }).catch(function(resObject){
-        logger.error('setProcessDone ' + JSON.stringify(resObject));
-        reject(resObject);
+        processes[processName] = "true";
+        localStorage.setItem('processes', JSON.stringify(processes));
+        resolve(true);
       });
     }
 

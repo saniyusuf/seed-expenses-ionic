@@ -10,19 +10,14 @@
     .module('starter.controllers')
     .controller('TestingCtrl', TestingCtrl);
 
-  TestingCtrl.$inject = ['$scope', 'AppRunStatusService', 'NotificationService'];
+  TestingCtrl.$inject = ['$scope', 'AppRunStatusService'];
 
-  function TestingCtrl($scope, AppRunStatusService,NotificationService) {
+  function TestingCtrl($scope, AppRunStatusService) {
 
 	  $scope.resumeEvent = function() {
 	    console.debug("resumeEvent");
 	    AppRunStatusService.statusEvent('resume');
 	  };
-
-    $scope.localNotificationTrigger = function(id) {
-      console.debug('localNotificationTrigger', id);
-      NotificationService.handleLocalNotification(id);
-    };
 
   }
 

@@ -1,6 +1,7 @@
+
 angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 'starter.controllers', 'ngCordova'])
 
-.run(['$ionicPlatform', '$rootScope', 'NetworkService', 'AppRunStatusService', 'NotificationService', function($ionicPlatform, $rootScope, NetworkService, AppRunStatusService, NotificationService) {
+.run(['$ionicPlatform', 'NetworkService', 'AppRunStatusService', 'UserService', 'SyncService' , function($ionicPlatform, NetworkService, AppRunStatusService, UserService, SyncService) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -12,22 +13,12 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       StatusBar.styleLightContent();
     }
 
-    // Local Notification plugin
-    if (cordova && cordova.plugins && cordova.plugins.notification) {
-      if(device.platform === "iOS") {
-         window.plugin.notification.local.promptForPermission();
-      }
-      cordova.plugins.notification.local.on("trigger", function (notification, state) {
-        NotificationService.handleLocalNotification(notification.id, state);
-      });
-      cordova.plugins.notification.local.on("click", function (notification, state) {
-        NotificationService.handleLocalNotificationClick(notification.id, state);
-      });
-    }
-
     document.addEventListener("resume", function() {
       AppRunStatusService.statusEvent('resume');
     }, false);
+    // document.addEventListener("pause", function() {
+    //   AppRunStatusService.statusEvent('pause');
+    // }, false);
     document.addEventListener("online", function() {
       NetworkService.networkEvent('online');
     }, false);
@@ -35,30 +26,54 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       NetworkService.networkEvent('offline');
     }, false);
 
+
+    // Local notifications plugin event handlers -  uncomment if you want them
+    // and make sure you inject the service
+    //
+    // if (cordova && cordova.plugins && cordova.plugins.notification) {
+    //   // Notification has reached its trigger time
+    //   cordova.plugins.notification.local.on("trigger", function (notification, state) {
+    //     LocalNotificationService.handleLocalNotification(notification.id, state);
+    //   });
+    //   // Event fired when user taps on notification
+    //   cordova.plugins.notification.local.on("click", function (notification, state) {
+    //     LocalNotificationService.handleLocalNotificationClick(notification.id, state);
+    //   });
+    // }
+
+
     // Example of locking the screen orientation to landscape
     // if (screen && screen.lockOrientation) {
     //   screen.lockOrientation('landscape');
     // }
+
   });
 
-  // handle refresh of project time/expense totals after new time/expense added
-  $rootScope.$on('refreshProjectTotals', function(event, args) {
-      $rootScope.$broadcast('handleRefreshProjectTotals');
+  // Check if the intialSync process has been run. This is the process that pulls
+  // down the data on the first run up to ensure offline first capability
+  //
+  // In the below case we also do a coldStartSync if we are starting but not for
+  // the first time
+  UserService.hasDoneProcess("initialDataLoaded").then(function (result) {
+    if (result) {
+      // Ensure that the syncTables will run
+      SyncService.setSyncLock("false");
+      SyncService.setSyncState("Complete");
+      SyncService.coldStartSync();
+    } else {
+      NetworkService.setNetworkStatus("online");
+      // Initial install and load of data => initialSync lighter-weight sync call.
+      SyncService.initialSync();
+    }
   });
-  // handle feedback from syncing of mobile tables
-  $rootScope.$on('syncTables', function(event, args) {
-      $rootScope.$broadcast('handleSyncTables', args);
-  });
+
 }])
 
-.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
-
-  $ionicConfigProvider.tabs.position('bottom');
-
   $stateProvider
 
     // setup an abstract state for the tabs directive
@@ -68,46 +83,27 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       templateUrl: RESOURCE_ROOT +  'templates/tabsMain.html'
     })
 
-    // the project tab has its own child nav-view and history
-    .state('tab.project-index', {
-      url: '/projects',
+
+  .state('tab.home', {
+      url: '/home',
       views: {
-        'projects-tab': {
-          templateUrl: RESOURCE_ROOT + 'templates/projectIndex.html',
-          controller: 'ProjectIndexCtrl'
+        'home-tab': {
+          templateUrl: RESOURCE_ROOT +  'templates/home.html'
         }
       }
     })
 
-    .state('tab.project-detail', {
-      url: '/project/:projectId',
-      views: {
-        'projects-tab': {
-          templateUrl: RESOURCE_ROOT +  'templates/projectDetail.html',
-          controller: 'ProjectDetailCtrl'
-        }
-      }
-    })
 
-    .state('tab.project-expense', {
-      url: '/project/:type/:projectId',
-      views: {
-        'projects-tab': {
-          templateUrl: RESOURCE_ROOT +  'templates/projectTimeExpList.html',
-          controller: 'ProjectExpenseCtrl'
+      .state('tab.outbox', {
+        url: '/outbox',
+        views: {
+          'settings-tab': {
+            templateUrl: RESOURCE_ROOT + 'templates/outbox.html',
+            controller: 'OutboxCtrl',
+            controllerAs: 'outboxControllerViewModel'
+          }
         }
-      }
-    })
-
-    .state('tab.project-expense-new', {
-      url: '/project/:type/new/:projectId',
-      views: {
-        'projects-tab': {
-          templateUrl: RESOURCE_ROOT +  'templates/projectTimeExpNew.html'
-        }
-      }
-    })
-
+      })
 
     /*****************************************************
      * S E T T I N G S    &    D E V    T O O L S
@@ -173,20 +169,30 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       }
     });
 
+  // ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !
+  //
+  //    A H O Y     H O Y     ! ! !
+  //
+  //    Change this to call you home page/tab/etc
+  //    At the moment it points to the MobileCaddy Settings tab
+  //
+  // ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/projects');
+  $urlRouterProvider.otherwise('/tab/settings');
 
 }]);
 
 // This is the function that get's called once the MobileCaddy libs are done
 // checking the app install/health. Basically the point at which our client
 // app can kick off. It's here we boot angular into action.
+// runUpInfo : see http://developer.mobilecaddy.net/docs/api for details on
+// object and codes.
 function myapp_callback(runUpInfo) {
   if (typeof(runUpInfo) != "undefined" &&
      (typeof(runUpInfo.newVsn) != "undefined" && runUpInfo.newVsn != runUpInfo.curVsn)) {
     // Going to call a hardReset as an upgrade is available.
-    //console.debug('runUpInfo', runUpInfo);
-    var vsnUtils = mobileCaddy.require('mobileCaddy/vsnUtils');
+    console.debug('runUpInfo', runUpInfo);
+    var vsnUtils= mobileCaddy.require('mobileCaddy/vsnUtils');
     vsnUtils.hardReset();
   } else {
     // carry on, nothing to see here

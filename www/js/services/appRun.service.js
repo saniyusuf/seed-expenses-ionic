@@ -18,7 +18,7 @@
 	    statusEvent: function(status){
 	      logger.log('AppRunStatusService status ' + status);
 	      if (status == "resume") {
-	        resume();
+	        // resume();
 	      }
 	    }
 	  };
