@@ -82,18 +82,18 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       abstract: true,
       templateUrl: RESOURCE_ROOT +  'templates/tabsMain.html'
     })
-
-
-  .state('tab.home', {
-      url: '/home',
-      views: {
-        'home-tab': {
-          templateUrl: RESOURCE_ROOT +  'templates/home.html'
+      
+      .state('tab.projects', {
+        url: '/projects',
+        views: {
+          'projects-tab': {
+            templateUrl: RESOURCE_ROOT + 'templates/projects.html',
+            controller: 'ProjectsController',
+            controllerAs: 'projectsVM'
+          }
         }
-      }
-    })
-
-
+      })
+      
       .state('tab.outbox', {
         url: '/outbox',
         views: {
