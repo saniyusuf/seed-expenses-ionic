@@ -9,9 +9,9 @@
         .module('starter.controllers')
         .controller('ProjectsController', ProjectsController);
 
-    ProjectsController.$inject = ['$scope', '$rootScope', '$ionicLoading', '$interval', '$timeout', 'ProjectService', 'SyncService', 'devUtils', '$log'];
+    ProjectsController.$inject = ['$scope', '$rootScope', '$ionicLoading', '$interval', '$timeout', 'ProjectService', 'SyncService', 'devUtils', '$log', 'logger'];
 
-    function ProjectsController($scope, $rootScope, $ionicLoading, $interval, $timeout, ProjectService, SyncService, devUtils, $log) {
+    function ProjectsController($scope, $rootScope, $ionicLoading, $interval, $timeout, ProjectService, SyncService, devUtils, $log, logger) {
         var vm = this;
 
         // This unhides the nav-bar. The navbar is hidden in the cases where we want a
@@ -37,37 +37,23 @@
         vm.pullDownToRefreshProjects = pullDownToRefreshProjects;
         vm.checkIfSyncIsRequired = checkIfSyncIsRequired;
 
-        // Setup the loader and starting templates
-        if (typeof($rootScope.child) == "undefined") {
-            $ionicLoading.show({
-                duration: 30000,
-                delay : 400,
-                maxWidth: 600,
-                noBackdrop: true,
-                template: '<h1>Loading...</h1><p id="app-progress-msg" class="item-icon-left">Fetching Projects...<ion-spinner/></p>'
-            });
-        }
+        $ionicLoading.show({
+            duration: 30000,
+            delay : 400,
+            maxWidth: 600,
+            noBackdrop: true,
+            template: '<h1>Loading...</h1><p id="app-progress-msg" class="item-icon-left">Fetching Projects...<ion-spinner/></p>'
+        });
 
-        var localProjectsCB = function(localProjects) {
-            vm.projects = localProjects;
-            if (localProjects.length > 0) {
-                $ionicLoading.hide();
-            }
-        };
-
-        ProjectService.all(ProjectService.refreshFlag, localProjectsCB)
+        ProjectService.getAllProjects()
             .then(function(projects) {
                 vm.projects = projects;
-                $log.log('Projects Controller Obtained Projects');
                 $ionicLoading.hide();
-                syncButtonsClass("Remove", "ng-hide");
 
             }, function(reason) {
-                $log.log('Projects Controller Failed To Get Projects: reason -> ' + reason);
+                logger.log('Failed To Get All projects : ', reason);
                 $ionicLoading.hide();
             });
-
-        ProjectService.refreshFlag = false;
 
         var isSyncRequiredInterval = $interval(function() {
             vm.checkIfSyncIsRequired();
