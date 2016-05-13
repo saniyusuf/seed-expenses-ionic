@@ -37,23 +37,35 @@
         vm.pullDownToRefreshProjects = pullDownToRefreshProjects;
         vm.checkIfSyncIsRequired = checkIfSyncIsRequired;
 
-        $ionicLoading.show({
-            duration: 30000,
-            delay : 400,
-            maxWidth: 600,
-            noBackdrop: true,
-            template: '<h1>Loading...</h1><p id="app-progress-msg" class="item-icon-left">Fetching Projects...<ion-spinner/></p>'
-        });
-
-        ProjectService.getAllProjects()
-            .then(function(projects) {
-                vm.projects = projects;
-                $ionicLoading.hide();
-
-            }, function(reason) {
-                logger.log('Failed To Get All projects : ', reason);
-                $ionicLoading.hide();
+        if(SyncService.getSyncState() == 'Complete'){
+            getAllProjectsAfterInitialSync();
+        }else {
+            $scope.$on('syncTables', function (event, args) {
+                if(args.result == 'InitialLoadComplete'){
+                    getAllProjectsAfterInitialSync();
+                }
             });
+        }
+
+        function getAllProjectsAfterInitialSync() {
+            $ionicLoading.show({
+                duration: 30000,
+                delay : 400,
+                maxWidth: 600,
+                noBackdrop: true,
+                template: '<h1>Loading...</h1><p id="app-progress-msg" class="item-icon-left">Fetching Projects...<ion-spinner/></p>'
+            });
+
+            ProjectService.getAllProjects()
+                .then(function(projects) {
+                    vm.projects = projects;
+                    $ionicLoading.hide();
+
+                }, function(reason) {
+                    logger.log('Failed To Get All projects : ', reason);
+                    $ionicLoading.hide();
+                });
+        }
 
         var isSyncRequiredInterval = $interval(function() {
             vm.checkIfSyncIsRequired();
