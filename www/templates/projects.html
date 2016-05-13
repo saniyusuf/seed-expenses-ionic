@@ -25,7 +25,7 @@
             <ion-item
                     class="item mti-item"
                     collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.projectName"
-                    ui-sref="tab.project({projectId : project.id})">
+                    ui-sref="tab.project-detail({projectId : project.id})">
                 <h3>{{project.Name}}</h3>
                 <p>{{project.mobilecaddy1__Description__c}}&nbsp;</p>
             </ion-item>
