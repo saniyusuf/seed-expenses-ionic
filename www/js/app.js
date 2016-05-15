@@ -98,7 +98,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
         url: '/project-detail/:projectID',
         views: {
           'projects-tab': {
-            templateUrl: RESOURCE_ROOT + 'templates/project.html',
+            templateUrl: RESOURCE_ROOT + 'templates/projectDetail.html',
             controller: 'ProjectDetailController',
             controllerAs: 'projectDetailVM'
           }
