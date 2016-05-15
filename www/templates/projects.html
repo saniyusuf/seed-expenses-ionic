@@ -9,14 +9,6 @@
             </label>
         </div>
 
-        <!--<div class="item item-input search-input">-->
-            <!--<i class="icon ion-search placeholder-icon"></i>-->
-            <!--<input type="search" ng-model="search.query" />-->
-            <!--<button ng-if="search.query.length"-->
-                    <!--class="button button-icon ion-android-close search-clear-button"-->
-                    <!--ng-click="clearSearch()">-->
-            <!--</button>-->
-        <!--</div>-->
         <ion-refresher on-refresh="projectsVM.pullDownToRefreshProjects()"
                        pulling-text="Pull to refresh">
         </ion-refresher>
@@ -25,7 +17,7 @@
             <ion-item
                     class="item mti-item"
                     collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.projectName"
-                    ui-sref="tab.project-detail({projectId : project.id})">
+                    ui-sref="tab.project-detail({projectID : project.Id})">
                 <h3>{{project.Name}}</h3>
                 <p>{{project.mobilecaddy1__Description__c}}&nbsp;</p>
             </ion-item>
