@@ -129,6 +129,69 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
 })();
 /**
+ * Created by Sani Yusuf on 02/06/2016.
+ */
+
+(function () {
+    'use strict';
+    angular
+        .module('starter.services')
+        .factory('CreateExpenseModal', CreateExpenseModal);
+
+    CreateExpenseModal.$inject = ['$ionicModal', '$rootScope'];
+
+    function CreateExpenseModal($ionicModal, $rootScope) {
+        var $scope = $rootScope.$new(),
+            createExpenseModalInstance = {},
+            createExpenseModalInstanceOptions = {
+                scope: $scope,
+                focusFirstInput: true
+            },
+            createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/createExpense.html';
+
+        var createExpenseModal = {
+            open: open
+        };
+
+        return createExpenseModal;
+
+        function open() {
+            $scope = {
+                expenseDescription: '',
+                expenseAmount: '',
+                close: close()
+            };
+
+            return $ionicModal.fromTemplateUrl(
+                createExpenseModalTemplateUrl,
+                createExpenseModalInstanceOptions
+
+            ).then(function (modalInstance) {
+
+                $scope.close = function () {
+                    return modalInstance.hide()
+                        .then(function (modalInstance) {
+                            return modalInstance.remove();
+                        });
+                };
+
+                createExpenseModalInstance = modalInstance;
+                return modalInstance.show();
+            });
+        }
+
+        function close() {
+        }
+
+        function saveExpense() {
+
+        }
+
+    }
+
+})();
+
+/**
  * Deploy Factory
  */
 (function() {
@@ -930,6 +993,168 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
 })();
 /**
+ * Created by Sani Yusuf on 10/05/2016.
+ */
+
+angular
+    .module('starter.services')
+    .factory('ProjectService', ProjectService);
+
+ProjectService.$inject = ['$q', 'devUtils', '_', 'logger'];
+
+function ProjectService($q, devUtils, _, logger) {
+    var getAllProjectsFromSmartStorePromise = $q.defer(),
+        getProjectDetailsFromSmartStorePromise = $q.defer(),
+        getProjectSummaryFromSmartStorePromise = $q.defer(),
+        getProjectLocationFromSmartStorePromise = $q.defer(),
+        getAllProjectDetailsFromSmartStorePromise = $q.defer(),
+        getProjectSqlQuery,
+        getProjectExpensesSqlQuery,
+        getProjectLocationSqlQuery,
+        projectsTableName = 'MC_Project__ap',
+        projectExpensesTableName = "MC_Time_Expense__ap",
+        projectLocationTableName = "MC_Project_Location__ap";
+
+    var projectService = {
+        getAllProjects: getAllProjects,
+        getFullProjectDetails: getFullProjectDetails,
+        createNewExpense: createNewExpense
+    };
+
+    return projectService;
+
+    function getAllProjects() {
+        return devUtils.readRecords(projectsTableName, [])
+            .then(function (projectsRecordsSuccessResponse) {
+                getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
+                return getAllProjectsFromSmartStorePromise.promise;
+
+            }, function (projectsRecordsFailureResponse) {
+                getAllProjectsFromSmartStorePromise.reject(projectsRecordsFailureResponse);
+                return getAllProjectsFromSmartStorePromise.promise;
+            });
+    }
+
+    function getProjectSummary(projectID) {
+        var projectTimeTotal = 0;
+        var projectExpensesTotal = 0;
+        var timeAndExpenseProjects;
+
+        getProjectExpensesSqlQuery =
+            "SELECT * FROM {" + projectExpensesTableName + "} " +
+            "WHERE {" + projectExpensesTableName + ":mobilecaddy1__Project__c} = '" + projectID + "';";
+        logger.log('Get Time & Expenses Total Smart SQL Query -> ', getProjectSqlQuery);
+
+        return devUtils.smartSql(getProjectExpensesSqlQuery)
+            .then(function (timeAndExpenseProjectsSuccessResponse) {
+                if(!timeAndExpenseProjectsSuccessResponse.records.length || timeAndExpenseProjectsSuccessResponse.records.length < 1){
+                    getProjectSummaryFromSmartStorePromise.resolve({
+                        projectTimeTotal: projectTimeTotal,
+                        projectExpensesTotal: projectExpensesTotal
+                    });
+
+                    return getProjectSummaryFromSmartStorePromise.promise;
+                }
+
+                timeAndExpenseProjects = _.where(
+                    timeAndExpenseProjectsSuccessResponse.records,
+                    {'mobilecaddy1__Project__c': projectId}
+                );
+
+                angular.forEach(function (timeAndExpenseProject) {
+                    if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
+                        projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
+                    }
+
+                    if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c)){
+                        projectExpensesTotal += timeAndExpenseProject.mobilecaddy1__Expense_Amount__c;
+                    }
+                });
+
+                getProjectSummaryFromSmartStorePromise.resolve({
+                    projectTimeTotal: projectTimeTotal,
+                    projectExpensesTotal: projectExpensesTotal
+                });
+                return getProjectSummaryFromSmartStorePromise.promise;
+
+            }, function (timeAndExpenseProjectsFailureResponse) {
+                getProjectSummaryFromSmartStorePromise.reject(timeAndExpenseProjectsFailureResponse);
+                return getProjectSummaryFromSmartStorePromise.promise;
+            });
+
+    }
+
+    function getProjectDetail(projectID) {
+        getProjectSqlQuery =
+            "SELECT * FROM {" + projectsTableName + "} " +
+            "WHERE {" + projectsTableName + ":Id} = '" + projectID + "';";
+        logger.log('Get Projects Smart SQL Query -> ', getProjectSqlQuery);
+        return devUtils.smartSql(getProjectSqlQuery)
+            .then(function (projectSuccessResponse) {
+                logger.log('Successfully Got Project Detail -> ', projectSuccessResponse.records[0]);
+                getProjectDetailsFromSmartStorePromise.resolve(projectSuccessResponse.records[0]);
+                return getProjectDetailsFromSmartStorePromise.promise;
+
+            }, function (projectFailureResponse) {
+                getProjectDetailsFromSmartStorePromise.reject(projectFailureResponse);
+                return getProjectDetailsFromSmartStorePromise.promise;
+            });
+    }
+
+    function getProjectLocation(projectLocationID){
+        getProjectLocationSqlQuery =
+            "SELECT * FROM {" + projectLocationTableName + "} " +
+            "WHERE {" + projectLocationTableName + ":Id} = '" + projectLocationID + "';";
+        logger.log('Get Project Location SQL Query -> ', getProjectLocationSqlQuery);
+
+        return devUtils.smartSql(getProjectLocationSqlQuery)
+            .then(function (projectLocationSuccessResponse) {
+                logger.log('Project Location Successfully Gotten -> ', projectLocationSuccessResponse.records[0]);
+                getProjectLocationFromSmartStorePromise.resolve(projectLocationSuccessResponse.records[0]);
+                return getProjectLocationFromSmartStorePromise.promise;
+
+            }, function (projectLocationFailureResponse) {
+                logger.log('Failed To Get Project Location -> ', projectLocationFailureResponse);
+                getProjectLocationFromSmartStorePromise.reject(projectLocationFailureResponse);
+                return getProjectLocationFromSmartStorePromise.promise;
+            });
+    }
+
+    function getFullProjectDetails(projectID, projectLocationID) {
+        var projectPromises = {
+            projectDetailPromise: getProjectDetail(projectID),
+            projectSummaryPromise: getProjectSummary(projectID),
+            projectLocationPromise: getProjectLocation(projectLocationID)
+        };
+        return $q.all(projectPromises)
+            .then(function (fullProjectDetailsSuccessResponse) {
+                var fullProjectDetails = {};
+                fullProjectDetails.projectDetail = fullProjectDetailsSuccessResponse.projectDetailPromise;
+                fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
+                fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
+
+                logger.log('Got Full Project Details -> ', fullProjectDetails);
+                getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
+                return getAllProjectDetailsFromSmartStorePromise.promise;
+
+            }, function () {
+                getAllProjectDetailsFromSmartStorePromise.reject('Failed To Get All Project Details');
+                return getAllProjectDetailsFromSmartStorePromise.promise;
+            });
+    }
+
+    function isNullOrUndefined(variableToBeChecked) {
+        return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
+    }
+    
+    function createNewExpense() {
+        
+    }
+
+}
+
+
+/**
  * Sync Factory
  *
  * @description Handles Sync calls to the MobileCaddy API amd gets/sets sync state
@@ -952,12 +1177,18 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
 		// This is where you put your list of tables that you want from the platform
 		var appTables = [
-			{'Name': 'myDummyTable1__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours},
-			{'Name': 'myDummyTable2__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours}
+			// {'Name': 'myDummyTable1__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours},
+			// {'Name': 'myDummyTable2__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours},
+			{'Name': 'MC_Project__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60},
+			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 4000 * 60 *60},
+			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
 		];
 
 		var appTablesSyncNow = [
-			{'Name': 'myDummyTable1__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 0}
+			// {'Name': 'myDummyTable1__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 0},
+			{'Name': 'MC_Project__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60},
+			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 4000 * 60 *60},
+			{'Name': 'MC_Time_Expense__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
 		];
 
 
@@ -1060,7 +1291,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				//console.log('initialSync', initialTabArr);
 				devUtils.initialSync(initialTabArr).then(function(res){
 					UserService.setProcessDone("initialDataLoaded");
-					$rootScope.$emit('syncTables', {result : "InitialLoadComplete"});
+					$rootScope.$broadcast('syncTables', {result : "InitialLoadComplete"});
 					setSyncState("Complete");
 					resolve();
 				}).catch(function(resObject){
@@ -1146,7 +1377,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				// TODO - put some local notification stuff in here.
 				doSyncTables(tablesToSync).then(function(res){
 					// console.log("syncTables", res);
-					$rootScope.$emit('syncTables', {result : "Complete"});
+					$rootScope.$broadcast('syncTables', {result : "Complete"});
 					setSyncState("Complete");
 					// NOTE - Commented out for the time being - see TOPS-96
 					if (!res || res.status == 100999) {
@@ -1159,7 +1390,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				// IT ALWAYS RESOLVES
 				// }).catch(function(e){
 				// 	logger.warn('syncTables', e);
-				// 	$rootScope.$emit('syncTables', {result : "Complete"});
+				// 	$rootScope.$broadcast('syncTables', {result : "Complete"});
 				//    setSyncState("Complete");
 				//    reject(e);
 				// });
@@ -1181,7 +1412,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				// TODO - put some local notification stuff in here.
 				doSyncTables(tablesToSync).then(function(res){
 					// console.log("syncTables", res);
-					$rootScope.$emit('syncTables', {result : "Complete"});
+					$rootScope.$broadcast('syncTables', {result : "Complete"});
 					setSyncState("Complete");
 					// NOTE - Commented out for the time being - see TOPS-96
 					if (!res || res.status == 100999) {
@@ -1194,7 +1425,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				// IT ALWAYS RESOLVES
 				// }).catch(function(e){
 				//  logger.warn('syncTables', e);
-				//  $rootScope.$emit('syncTables', {result : "Complete"});
+				//  $rootScope.$broadcast('syncTables', {result : "Complete"});
 				//    setSyncState("Complete");
 				//    reject(e);
 				// });
@@ -1209,7 +1440,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 				return Promise.resolve({status:100999});
 			} else {
 				setSyncState("syncing");
-				$rootScope.$emit('syncTables', {result : "StartSync"});
+				$rootScope.$broadcast('syncTables', {result : "StartSync"});
 
 				var stopSyncing = false;
 				var sequence = Promise.resolve();
@@ -1220,7 +1451,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 					}
 					return sequence.then(function(res) {
 						//console.log("doSyncTables inSequence", table, res, stopSyncing);
-						//$rootScope.$emit('syncTables', {result : "TableComplete " + table.Name});
+						//$rootScope.$broadcast('syncTables', {result : "TableComplete " + table.Name});
 						if (!stopSyncing) {
 							return devUtils.syncMobileTable(table.Name, table.syncWithoutLocalUpdates, table.maxTableAge);
 						} else {
@@ -1236,13 +1467,13 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 									setSyncState("Complete");
 								}
 						}
-						$rootScope.$emit('syncTables', {table: table.Name, result : resObject.status});
+						$rootScope.$broadcast('syncTables', {table: table.Name, result : resObject.status});
 						return resObject;
 					}).catch(function(e){
 						//console.error('doSyncTables', e);
 						if (e.status != devUtils.SYNC_UNKONWN_TABLE) {
 							stopSyncing = true;
-							$rootScope.$emit('syncTables', {table: table.Name, result : e.status});
+							$rootScope.$broadcast('syncTables', {table: table.Name, result : e.status});
 							setSyncState("Complete");
 						}
 						return e;
