@@ -5,32 +5,29 @@
 (function () {
     'use strict';
     angular
-        .module('starter.controllers')
+        .module('starter.services')
         .factory('CreateExpenseModal', CreateExpenseModal);
 
     CreateExpenseModal.$inject = ['$ionicModal', '$rootScope'];
 
     function CreateExpenseModal($ionicModal, $rootScope) {
         var $scope = $rootScope.$new(),
-            createExpenseModalInstance = {},
             createExpenseModalInstanceOptions = {
                 scope: $scope,
                 focusFirstInput: true
             },
-            createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/modals/createExpense.html';
+            createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/createExpense.html';
 
         var createExpenseModal = {
-            open: open,
-            close: close
+            open: open
         };
 
         return createExpenseModal;
 
         function open() {
-            $scope = {
-                expenseDescription: '',
-                expenseAmount: '',
-                saveExpense: saveExpense
+            $scope.newExpense = {
+                description: '',
+                amount: ''
             };
 
             return $ionicModal.fromTemplateUrl(
@@ -38,15 +35,19 @@
                 createExpenseModalInstanceOptions
 
             ).then(function (modalInstance) {
-                    createExpenseModal.close = close(modalInstance);
-                    return modalInstance.show();
-                });
+
+                $scope.close = function () {
+                   closeAndRemove(modalInstance)
+                };
+
+                return modalInstance.show();
+            });
         }
 
-        function close(modalInstance) {
+        function closeAndRemove(modalInstance) {
             return modalInstance.hide()
-                .then(function (modalToBeRemoved) {
-                    return modalToBeRemoved.remove();
+                .then(function () {
+                    return modalInstance.remove();
                 });
         }
 
