@@ -1,7 +1,5 @@
 <ion-view title="Projects">
     <ion-content>
-        <br>
-        <br>
         <div class="list list-inset">
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
@@ -17,7 +15,7 @@
             <ion-item
                     class="item mti-item"
                     collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.projectName"
-                    ui-sref="tab.project-detail({projectID : project.Id})">
+                    ui-sref="tab.project-detail({projectID : project.Id, projectLocationID : project.mobilecaddy1__MC_Project_Location__c})">
                 <h3>{{project.Name}}</h3>
                 <p>{{project.mobilecaddy1__Description__c}}&nbsp;</p>
             </ion-item>
