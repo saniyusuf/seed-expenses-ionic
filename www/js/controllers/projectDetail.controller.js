@@ -9,12 +9,13 @@
         .module('starter.controllers')
         .controller('ProjectDetailController', ProjectDetailController);
 
-    ProjectDetailController.$inject = ['FullProjectDetails'];
+    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateExpenseModal'];
 
-    function ProjectDetailController(FullProjectDetails) {
+    function ProjectDetailController(FullProjectDetails, CreateExpenseModal) {
         console.log(FullProjectDetails);
 
         var vm = this;
+        vm.openCreateNewExpenseModal = CreateExpenseModal.open;
         vm.fullProjectDetails = {};
 
         vm.fullProjectDetails = FullProjectDetails;
