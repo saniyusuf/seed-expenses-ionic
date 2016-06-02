@@ -9,22 +9,15 @@
         .module('starter.controllers')
         .controller('ProjectDetailController', ProjectDetailController);
 
-    ProjectDetailController.$inject = ['$stateParams', 'logger', 'ProjectService'];
+    ProjectDetailController.$inject = ['FullProjectDetails'];
 
-    function ProjectDetailController($stateParams, logger, ProjectService) {
+    function ProjectDetailController(FullProjectDetails) {
+        console.log(FullProjectDetails);
+
         var vm = this;
+        vm.fullProjectDetails = {};
 
-        var projectID = $stateParams.projectID;
-
-        console.log('Project ID -> ', projectID);
-        ProjectService.getProjectDetail(projectID)
-            .then(function (projectDetail) {
-                logger.log('Project Detail Successfully Gotten-> ', projectDetail);
-                vm.projectDetail = projectDetail[0];
-
-            }, function (projectDetailFailureResponse) {
-                logger.log('Failed To Get Project Detail -> ', projectDetailFailureResponse);
-            });
+        vm.fullProjectDetails = FullProjectDetails;
     }
 
 })();
