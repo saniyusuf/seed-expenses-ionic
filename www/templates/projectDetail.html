@@ -1,0 +1,71 @@
+<ion-view>
+    <ion-content>
+        <div class="project-name padding">
+            <h3>{{projectDetailVM.fullProjectDetails.projectDetail.Name}}</h3>
+            <div class="project-details">{{projectDetailVM.fullProjectDetails.projectDetail.mobilecaddy1__Description__c}}</div>
+            <hr>
+        </div>
+
+        <div class="project-info">
+            <div class="row full-image project-info-icon-desc">
+                <div class="col col-offset-12-5" >
+                    Location
+                </div>
+            </div>
+            <div class="row full-image">
+                <div class="col text-center">
+                    <button class="button button-outline icon-left ion-location button-positive">
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectLocation.Name}}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row full-image project-info-icon-desc">
+                <div class="col col-offset-12-5" >
+                    Total Time Spent
+                </div>
+            </div>
+            <div class="row full-image">
+                <div class="col text-center">
+                    <button class="button button-outline icon-left ion-ios-timer button-positive">
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectTimeTotal}}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row full-image project-info-icon-desc">
+                <div class="col col-offset-12-5">
+                    Total Expenses
+                </div>
+            </div>
+            <div class="row full-image">
+                <div class="col text-center">
+                    <button class="button button-outline icon-left ion-pricetags button-positive">
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectExpensesTotal | currency : '£'}}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-options row">
+            <div class="col col-25 text-center">
+                <i class="button button-icon icon ion-pricetags balanced"></i>
+                <p>View Expense Record</p>
+            </div>
+            <div class="col col-25 text-center">
+                <i class="button button-icon icon ion-cash balanced"></i>
+                <p>New Expense</p>
+            </div>
+            <div class="col col-25 text-center">
+                <i class="button button-icon icon ion-ios-timer-outline balanced"></i>
+                <p>New Time</p>
+            </div>
+            <div class="col col-25 text-center">
+                <i class="button button-icon icon ion-ios-timer balanced"></i>
+                <p>View Time Record</p>
+            </div>
+        </div>
+
+    </ion-content>
+
+</ion-view>
