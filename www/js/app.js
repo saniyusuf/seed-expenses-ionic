@@ -95,12 +95,15 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       })
 
       .state('tab.project-detail', {
-        url: '/project-detail/:projectID',
+        url: '/project-detail/:projectID/:projectLocationID',
         views: {
           'projects-tab': {
             templateUrl: RESOURCE_ROOT + 'templates/projectDetail.html',
             controller: 'ProjectDetailController',
-            controllerAs: 'projectDetailVM'
+            controllerAs: 'projectDetailVM',
+            resolve: {
+              FullProjectDetails: fullProjectDetails
+            }
           }
         }
       })
@@ -209,4 +212,22 @@ function myapp_callback(runUpInfo) {
     // carry on, nothing to see here
     angular.bootstrap(document, ['starter']);
   }
+}
+
+fullProjectDetails.$inject = ['$stateParams', 'logger', 'ProjectService', '$ionicLoading', '$q'];
+function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading, $q) {
+  $ionicLoading.show({
+    template: "Getting Project's Details"
+  });
+  return ProjectService.getFullProjectDetails($stateParams.projectID, $stateParams.projectLocationID)
+      .then(function (projectDetail) {
+        logger.log('Full Project Details ->', projectDetail[0]);
+        $ionicLoading.hide();
+        return $q.resolve(projectDetail);
+
+      }, function (projectDetailFailureResponse) {
+        logger.log('Failed To Get Project Detail -> ', projectDetailFailureResponse);
+        $ionicLoading.hide();
+        return $q.reject(projectDetailFailureResponse);
+      });
 }
