@@ -7,6 +7,7 @@ $positive:							#2aa3fe;
 $item-divider-bg:				#caecd3;
 $list-header-color:			#caecd3;
 $button-light-border:		#7fd291;
+$balanced:  #7fd291;
 
 @import "ionic/ionic";
 
@@ -76,4 +77,34 @@ a.disabled {
   position: fixed;
   bottom: 48px;
   z-index: 9999;
+}
+
+div.project-info button.button-outline{
+  width: 75%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+div.project-info div.project-info-icon-desc div.col{
+  margin-bottom: -15px;
+  font-size: smaller;
+}
+
+div.project-options div.col > p{
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 100%;
+}
+
+div.project-options div.col > i.button-icon:before{
+  font-size: 45px;
+  margin-bottom: 7.5px;
+}
+
+div.project-options{
+  margin-top: 20px;
+}
+
+.col-offset-12-5 {
+  margin-left: 12.5%;
 }
