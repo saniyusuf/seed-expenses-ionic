@@ -23,9 +23,8 @@ function ProjectService($q, devUtils, _, logger) {
 
     var projectService = {
         getAllProjects: getAllProjects,
-        getProjectDetail: getProjectDetail,
-        getProjectSummary: getProjectSummary,
-        getFullProjectDetails: getFullProjectDetails
+        getFullProjectDetails: getFullProjectDetails,
+        createNewExpense: createNewExpense
     };
 
     return projectService;
@@ -152,6 +151,10 @@ function ProjectService($q, devUtils, _, logger) {
 
     function isNullOrUndefined(variableToBeChecked) {
         return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
+    }
+    
+    function createNewExpense() {
+        
     }
 
 }
