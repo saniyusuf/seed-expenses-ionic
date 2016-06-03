@@ -6,9 +6,9 @@ angular
     .module('starter.services')
     .factory('ProjectService', ProjectService);
 
-ProjectService.$inject = ['$q', 'devUtils', '_', 'logger'];
+ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService'];
 
-function ProjectService($q, devUtils, _, logger) {
+function ProjectService($q, devUtils, _, logger, SyncService) {
     var getAllProjectsFromSmartStorePromise = $q.defer(),
         getProjectDetailsFromSmartStorePromise = $q.defer(),
         getProjectSummaryFromSmartStorePromise = $q.defer(),
@@ -17,9 +17,9 @@ function ProjectService($q, devUtils, _, logger) {
         getProjectSqlQuery,
         getProjectExpensesSqlQuery,
         getProjectLocationSqlQuery,
-        projectsTableName = 'MC_Project__ap',
-        projectExpensesTableName = "MC_Time_Expense__ap",
-        projectLocationTableName = "MC_Project_Location__ap";
+        PROJECTS_TABLE_NAME = 'MC_Project__ap',
+        PROJECT_EXPENSES_TABLE_NAME = "MC_Time_Expense__ap",
+        PROJECT_LOCATION_TABLE_NAME = "MC_Project_Location__ap";
 
     var projectService = {
         getAllProjects: getAllProjects,
@@ -30,7 +30,7 @@ function ProjectService($q, devUtils, _, logger) {
     return projectService;
 
     function getAllProjects() {
-        return devUtils.readRecords(projectsTableName, [])
+        return devUtils.readRecords(PROJECTS_TABLE_NAME, [])
             .then(function (projectsRecordsSuccessResponse) {
                 getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
                 return getAllProjectsFromSmartStorePromise.promise;
@@ -47,8 +47,8 @@ function ProjectService($q, devUtils, _, logger) {
         var timeAndExpenseProjects;
 
         getProjectExpensesSqlQuery =
-            "SELECT * FROM {" + projectExpensesTableName + "} " +
-            "WHERE {" + projectExpensesTableName + ":mobilecaddy1__Project__c} = '" + projectID + "';";
+            "SELECT * FROM {" + PROJECT_EXPENSES_TABLE_NAME + "} " +
+            "WHERE {" + PROJECT_EXPENSES_TABLE_NAME + ":mobilecaddy1__Project__c} = '" + projectID + "';";
         logger.log('Get Time & Expenses Total Smart SQL Query -> ', getProjectSqlQuery);
 
         return devUtils.smartSql(getProjectExpensesSqlQuery)
@@ -92,8 +92,8 @@ function ProjectService($q, devUtils, _, logger) {
 
     function getProjectDetail(projectID) {
         getProjectSqlQuery =
-            "SELECT * FROM {" + projectsTableName + "} " +
-            "WHERE {" + projectsTableName + ":Id} = '" + projectID + "';";
+            "SELECT * FROM {" + PROJECTS_TABLE_NAME + "} " +
+            "WHERE {" + PROJECTS_TABLE_NAME + ":Id} = '" + projectID + "';";
         logger.log('Get Projects Smart SQL Query -> ', getProjectSqlQuery);
         return devUtils.smartSql(getProjectSqlQuery)
             .then(function (projectSuccessResponse) {
@@ -109,8 +109,8 @@ function ProjectService($q, devUtils, _, logger) {
 
     function getProjectLocation(projectLocationID){
         getProjectLocationSqlQuery =
-            "SELECT * FROM {" + projectLocationTableName + "} " +
-            "WHERE {" + projectLocationTableName + ":Id} = '" + projectLocationID + "';";
+            "SELECT * FROM {" + PROJECT_LOCATION_TABLE_NAME + "} " +
+            "WHERE {" + PROJECT_LOCATION_TABLE_NAME + ":Id} = '" + projectLocationID + "';";
         logger.log('Get Project Location SQL Query -> ', getProjectLocationSqlQuery);
 
         return devUtils.smartSql(getProjectLocationSqlQuery)
@@ -152,9 +152,16 @@ function ProjectService($q, devUtils, _, logger) {
     function isNullOrUndefined(variableToBeChecked) {
         return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
     }
-    
-    function createNewExpense() {
-        
+
+    function createNewExpense(newExpense) {
+        return devUtils.insertRecord(PROJECT_EXPENSES_TABLE_NAME, newExpense)
+            .then(function (createNewExpenseSuccessResponse) {
+                SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
+                return $q.resolve(createNewExpenseSuccessResponse);
+
+            }, function (createNewExpensesFailureResponse) {
+                return $q.reject(createNewExpensesFailureResponse);
+            });
     }
 
 }
