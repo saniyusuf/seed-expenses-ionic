@@ -108,3 +108,41 @@ div.project-options{
 .col-offset-12-5 {
   margin-left: 12.5%;
 }
+
+div.row > div.col.col-75.expense-receipt-container{
+  height: 300px;
+  box-shadow: 0 0 3px 0 rgba(0,0,0,0.15);
+}
+
+div.receipt-placeholder{
+  margin-top: 20%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+div.receipt-placeholder > p,i{
+  color: #c8c8c8;
+  z-index: -10;
+}
+
+div.receipt-placeholder > i{
+  font-size: 7em;
+}
+
+div.receipt-placeholder > p{
+  font-size: 1em;
+}
+
+i.dismiss-receipt-icon{
+  position: relative;
+  right: -50%;
+  top: -0.5em;
+  text-align: right;
+  font-size: 3.5em;
+}
+
+div.row.receipt-container{
+  margin-top: 40px;
+}
+
