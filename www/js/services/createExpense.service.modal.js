@@ -6,11 +6,11 @@
     'use strict';
     angular
         .module('starter.services')
-        .factory('CreateExpenseModal', CreateExpenseModal);
+        .factory('CreateTimeAndExpenseModal', CreateTimeAndExpenseModal);
 
-    CreateExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading'];
+    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading'];
 
-    function CreateExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
+    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
         var $scope = $rootScope.$new(),
             createExpenseModalInstanceOptions = {
                 scope: $scope,
