@@ -24,7 +24,9 @@ function ProjectService($q, devUtils, _, logger, SyncService) {
     var projectService = {
         getAllProjects: getAllProjects,
         getFullProjectDetails: getFullProjectDetails,
-        createNewExpense: createNewExpense
+        createNewExpense: createNewExpense,
+        getAllExpenses: getAllExpenses,
+        getAllTimeLogs: getAllTimeLogs
     };
 
     return projectService;
@@ -161,6 +163,38 @@ function ProjectService($q, devUtils, _, logger, SyncService) {
 
             }, function (createNewExpensesFailureResponse) {
                 return $q.reject(createNewExpensesFailureResponse);
+            });
+    }
+
+    function getAllExpenses(projectID) {
+        return devUtils.readRecords(PROJECT_EXPENSES_TABLE_NAME, [])
+            .then(function (allExpensesSuccessResponse) {
+                var allExpenses = [];
+                angular.forEach(allExpensesSuccessResponse.records, function (expense) {
+                    if(!isNullOrUndefined(expense.mobilecaddy1__Expense_Amount__c) && expense.mobilecaddy1__Project__c == projectID){
+                        allExpenses.push(expense);
+                    }
+                });
+                return $q.resolve(allExpenses);
+
+            }, function (allExpensesFailureResponse) {
+                return $q.reject(allExpensesFailureResponse);
+            });
+    }
+
+    function getAllTimeLogs(projectID) {
+        return devUtils.readRecords(PROJECT_EXPENSES_TABLE_NAME, [])
+            .then(function (allTimeLogsSuccessResponse) {
+                var allExpenses = [];
+                angular.forEach(allTimeLogsSuccessResponse.records, function (expense) {
+                    if(!isNullOrUndefined(expense.mobilecaddy1__Duration_Minutes__c) && expense.mobilecaddy1__Project__c == projectID){
+                        allExpenses.push(expense);
+                    }
+                });
+                return $q.resolve(allExpenses);
+
+            }, function (allTimeLogsFailureResponse) {
+                return $q.reject(allTimeLogsFailureResponse);
             });
     }
 
