@@ -26,6 +26,7 @@
             expenseType: ''
         };
         $scope.createNewExpense = createNewExpense;
+        $scope.createNewTimeLog = createNewTimeLog;
 
         var createExpenseModal = {
             open: open
@@ -75,7 +76,15 @@
                 });
         }
 
-        function createNewExpense(expenseType) {
+        function createNewTimeLog() {
+            createNewTimeLogOrExpense('time');
+        }
+
+        function createNewExpense() {
+            createNewTimeLogOrExpense('expense');
+        }
+
+        function createNewTimeLogOrExpense(expenseType) {
             $ionicLoading.show({
                 template: 'Submitting You New Expense ..'
             });
@@ -93,7 +102,7 @@
                 newExpense.mobilecaddy1__Expense_Type__c = $scope.newExpense.expenseType;
             }
 
-            ProjectService.createNewExpense(newExpense)
+            ProjectService.createNewTimeLogOrExpense(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
                     $ionicLoading.hide();
