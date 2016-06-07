@@ -12,7 +12,6 @@
 
     function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
         var $scope = $rootScope.$new(),
-            projectID = '',
             createExpenseModalInstanceOptions = {
                 scope: $scope,
                 focusFirstInput: true
