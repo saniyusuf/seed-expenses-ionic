@@ -49,19 +49,19 @@
 
         <div class="project-options row">
             <div class="col col-25 text-center">
-                <i class="button button-icon icon ion-pricetags balanced"></i>
+                <i class="button button-icon icon ion-pricetags balanced" ng-click="projectDetailVM.getAllExpenses()"></i>
                 <p>View Expense Record</p>
             </div>
-            <div class="col col-25 text-center" ng-click="projectDetailVM.openCreateNewExpenseModal('expense')">
+            <div class="col col-25 text-center" ng-click="projectDetailVM.openCreateNewExpenseModal()">
                 <i class="button button-icon icon ion-cash balanced"></i>
                 <p>New Expense</p>
             </div>
-            <div class="col col-25 text-center" ng-click="projectDetailVM.openCreateNewExpenseModal('time')">
+            <div class="col col-25 text-center" ng-click="projectDetailVM.openCreateNewTimeLogModal()">
                 <i class="button button-icon icon ion-ios-timer-outline balanced"></i>
                 <p>New Time</p>
             </div>
             <div class="col col-25 text-center">
-                <i class="button button-icon icon ion-ios-timer balanced"></i>
+                <i class="button button-icon icon ion-ios-timer balanced" ng-click="projectDetailVM.getAllTimeLogs()"></i>
                 <p>View Time Record</p>
             </div>
         </div>
