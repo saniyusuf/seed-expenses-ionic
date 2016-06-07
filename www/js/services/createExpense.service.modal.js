@@ -12,6 +12,7 @@
 
     function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
         var $scope = $rootScope.$new(),
+            projectID = '',
             createExpenseModalInstanceOptions = {
                 scope: $scope,
                 focusFirstInput: true
@@ -21,7 +22,8 @@
         $scope.newExpense = {
             description: '',
             amount: '',
-            receiptImage: ''
+            receiptImage: '',
+            expenseType: ''
         };
         $scope.createNewExpense = createNewExpense;
 
@@ -31,12 +33,13 @@
 
         return createExpenseModal;
 
-        function open(templateType) {
+        function open(projectID, expenseType) {
             var templateUrl = '';
-            if(templateType === 'time'){
+            if(expenseType === 'time'){
                 $scope.newExpense = {
                     description: '',
-                    duration: ''
+                    duration: '',
+                    projectID: projectID
                 };
                 templateUrl = createTimeLogModalTemplateUrl;
 
@@ -44,7 +47,9 @@
                 $scope.newExpense = {
                     description: '',
                     amount: '',
-                    receiptImage: ''
+                    receiptImage: '',
+                    projectID: projectID,
+                    expenseType: ''
                 };
                 templateUrl = createExpenseModalTemplateUrl;
             }
@@ -70,12 +75,25 @@
                 });
         }
 
-        function createNewExpense() {
+        function createNewExpense(expenseType) {
             $ionicLoading.show({
                 template: 'Submitting You New Expense ..'
             });
 
-            ProjectService.createNewExpense($scope.newExpense)
+            var newExpense = {
+                "mobilecaddy1__Short_Description__c": $scope.newExpense.description,
+                "Name": 'TMP-' + Date.now(),
+                "mobilecaddy1__Project__c": $scope.projectID
+            };
+
+            if(expenseType === 'time'){
+                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration.$modelValue;
+            } else {
+                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount.$modelValue;
+                newExpense.mobilecaddy1__Expense_Type__c = $scope.newExpense.expenseType;
+            }
+
+            ProjectService.createNewExpense(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
                     $ionicLoading.hide();
