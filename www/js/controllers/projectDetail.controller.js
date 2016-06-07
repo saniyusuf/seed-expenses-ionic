@@ -9,12 +9,14 @@
         .module('starter.controllers')
         .controller('ProjectDetailController', ProjectDetailController);
 
-    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateTimeAndExpenseModal'];
+    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateTimeAndExpenseModal', '$stateParams'];
 
-    function ProjectDetailController(FullProjectDetails, CreateTimeAndExpenseModal) {
+    function ProjectDetailController(FullProjectDetails, CreateTimeAndExpenseModal, $stateParams) {
 
         var vm = this;
-        vm.openCreateNewExpenseModal = CreateTimeAndExpenseModal.open;
+        vm.openCreateNewExpenseModal = function (expenseType) {
+            CreateTimeAndExpenseModal.open($stateParams.projectID, expenseType);
+        };
         vm.fullProjectDetails = {};
 
         vm.fullProjectDetails = FullProjectDetails;
