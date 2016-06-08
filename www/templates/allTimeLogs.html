@@ -1,0 +1,30 @@
+<ion-view title="All Time Logs">
+    <ion-content>
+
+        <div class="full-image text-center no-entries-placeholder" ng-if="allTimeLogsVM.allTimeLogs.length < 1">
+            <i class="icon ion-ios-timer"></i>
+            <p>
+                No Time-Logs Yet
+            </p>
+        </div>
+
+        <div class="expense-list full-image padding" ng-repeat="timeLog in allTimeLogsVM.allTimeLogs">
+            <div class="row">
+                <div class="col col-66 item-text-wrap expense-description">
+                    {{timeLog.mobilecaddy1__Short_Description__c}}
+                </div>
+
+                <div class="col expense-meta">
+                    <div class="expense-date">
+                        {{timeLog.CreatedDate | time: 'MM/dd/yy'}}
+                    </div>
+                    <div class="expense-price">
+                        {{timeLog.mobilecaddy1__Duration_Minutes__c}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ion-content>
+
+</ion-view>
