@@ -15,7 +15,7 @@
     function AllTimeLogsController(AllTimeLogs) {
         var vm = this;
 
-        vm.allExpenses = AllTimeLogs;
+        vm.allTimeLogs = AllTimeLogs;
     }
 
 })();
