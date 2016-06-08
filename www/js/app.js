@@ -97,6 +97,20 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
         }
       })
 
+      .state('tab.all-time-logs', {
+        url: '/all-time-logs/:projectID',
+        views: {
+          'projects-tab': {
+            templateUrl: RESOURCE_ROOT + 'templates/allTimeLogs.html',
+            controller: 'AllTimeLogsController',
+            controllerAs: 'allTimeLogsVM',
+            resolve: {
+              AllTimeLogs: allTimeLogs
+            }
+          }
+        }
+      })
+
       .state('tab.projects', {
         url: '/projects',
         views: {
@@ -259,6 +273,23 @@ function allExpenses(ProjectService, $ionicLoading, $stateParams) {
 
       }, function (allExpensesFailureResponse) {
         $ionicLoading.hide();
-        return $q.reject(allExpensesFailureResponse)
+        return $q.reject(allExpensesFailureResponse);
+      });
+}
+
+allTimeLogs.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
+function allTimeLogs(ProjectService, $ionicLoading, $stateParams) {
+  $ionicLoading.show({
+    template: 'Getting Time Logs ..'
+  });
+
+  return ProjectService.getAllTimeLogs($stateParams.projectID)
+      .then(function (allTimeLogs) {
+        $ionicLoading.hide();
+        return allTimeLogs;
+
+      }, function (allTimeLogsFailureResponse) {
+        $ionicLoading.hide();
+        return $q.reject(allTimeLogsFailureResponse);
       });
 }
