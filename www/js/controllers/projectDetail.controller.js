@@ -9,9 +9,9 @@
         .module('starter.controllers')
         .controller('ProjectDetailController', ProjectDetailController);
 
-    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateTimeAndExpenseModal', '$stateParams', 'ProjectService'];
+    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateTimeAndExpenseModal', '$stateParams'];
 
-    function ProjectDetailController(FullProjectDetails, CreateTimeAndExpenseModal, $stateParams, ProjectService) {
+    function ProjectDetailController(FullProjectDetails, CreateTimeAndExpenseModal, $stateParams) {
         var vm = this;
 
         vm.openCreateNewExpenseModal = function () {
@@ -19,13 +19,6 @@
         };
         vm.openCreateNewTimeLogModal = function () {
             CreateTimeAndExpenseModal.open($stateParams.projectID, 'time');
-        };
-
-        vm.getAllExpenses = function () {
-            ProjectService.getAllExpenses($stateParams.projectID);
-        };
-        vm.getAllTimeLogs = function () {
-            ProjectService.getAllTimeLogs($stateParams.projectID);
         };
 
         vm.fullProjectDetails = {};
