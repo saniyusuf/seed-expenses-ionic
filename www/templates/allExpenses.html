@@ -1,6 +1,13 @@
 <ion-view title="All Expenses">
     <ion-content>
 
+        <div class="full-image text-center no-entries-placeholder" ng-if="allExpensesVM.allExpenses.length < 1">
+            <i class="icon ion-images"></i>
+            <p>
+                No Expenses Logged Yet
+            </p>
+        </div>
+
         <div class="expense-list full-image padding">
             <div class="row">
                 <div class="col col-66 item-text-wrap expense-description">
