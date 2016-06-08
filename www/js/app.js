@@ -83,6 +83,20 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       templateUrl: RESOURCE_ROOT +  'templates/tabsMain.html'
     })
 
+      .state('tab.all-expenses', {
+        url: '/all-expenses/:projectID',
+        views: {
+          'projects-tab': {
+            templateUrl: RESOURCE_ROOT + 'templates/allExpenses.html',
+            controller: 'AllExpensesController',
+            controllerAs: 'allExpensesVM',
+            resolve: {
+              AllExpenses: allExpenses
+            }
+          }
+        }
+      })
+
       .state('tab.projects', {
         url: '/projects',
         views: {
@@ -229,5 +243,22 @@ function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading,
         logger.log('Failed To Get Project Detail -> ', projectDetailFailureResponse);
         $ionicLoading.hide();
         return $q.reject(projectDetailFailureResponse);
+      });
+}
+
+allExpenses.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
+function allExpenses(ProjectService, $ionicLoading, $stateParams) {
+  $ionicLoading.show({
+    template: 'Getting Expenses ..'
+  });
+
+  return ProjectService.getAllExpenses($stateParams.projectID)
+      .then(function (allExpenses) {
+        $ionicLoading.hide();
+        return allExpenses;
+
+      }, function (allExpensesFailureResponse) {
+        $ionicLoading.hide();
+        return $q.reject(allExpensesFailureResponse)
       });
 }
