@@ -272,7 +272,9 @@ function allExpenses(ProjectService, $ionicLoading, $stateParams) {
         return allExpenses;
 
       }, function (allExpensesFailureResponse) {
-        $ionicLoading.hide();
+        $ionicLoading.hide({
+          template: "Couldn't Get Expenses. Please Try Again"
+        });
         return $q.reject(allExpensesFailureResponse);
       });
 }
@@ -289,7 +291,9 @@ function allTimeLogs(ProjectService, $ionicLoading, $stateParams) {
         return allTimeLogs;
 
       }, function (allTimeLogsFailureResponse) {
-        $ionicLoading.hide();
+        $ionicLoading.show({
+          template: "Couldn't Get Time Logs. Please Try Again"
+        });
         return $q.reject(allTimeLogsFailureResponse);
       });
 }
