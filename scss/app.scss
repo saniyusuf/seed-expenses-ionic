@@ -147,3 +147,22 @@ div.row.receipt-container{
   margin-bottom: 30px;
 }
 
+div.expense-list > div.row{
+  box-shadow: 0 0 3px 0 $button-light-border;
+}
+
+.expense-description{
+  height: inherit;
+  font-weight: 300;
+  font-size: 1.2em;
+}
+
+.expense-meta .expense-price{
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.expense-meta .expense-date{
+  font-weight: 200;
+  font-size: 0.8em;
+}
