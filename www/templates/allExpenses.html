@@ -2,7 +2,7 @@
     <ion-content>
 
         <div class="full-image text-center no-entries-placeholder" ng-if="allExpensesVM.allExpenses.length < 1">
-            <i class="icon ion-images"></i>
+            <i class="icon ion-pricetags"></i>
             <p>
                 No Expenses Logged Yet
             </p>
@@ -16,7 +16,7 @@
 
                 <div class="col expense-meta">
                     <div class="expense-date">
-                        {{expense.CreatedDate}}
+                        {{expense.CreatedDate | time: 'MM/dd/yy'}}
                     </div>
                     <div class="expense-price">
                         {{expense.mobilecaddy1__Expense_Amount__c | currency: '£'}}
