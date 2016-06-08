@@ -60,8 +60,8 @@
                 <i class="button button-icon icon ion-ios-timer-outline balanced"></i>
                 <p>New Time</p>
             </div>
-            <div class="col col-25 text-center">
-                <i class="button button-icon icon ion-ios-timer balanced" ng-click="projectDetailVM.getAllTimeLogs()"></i>
+            <div class="col col-25 text-center" ui-sref="tab.all-time-logs({projectID: projectDetailVM.fullProjectDetails.projectDetail.Id})">
+                <i class="button button-icon icon ion-ios-timer balanced"></i>
                 <p>View Time Record</p>
             </div>
         </div>
