@@ -48,8 +48,8 @@
         </div>
 
         <div class="project-options row">
-            <div class="col col-25 text-center">
-                <i class="button button-icon icon ion-pricetags balanced" ng-click="projectDetailVM.getAllExpenses()"></i>
+            <div class="col col-25 text-center" ui-sref="tab.all-expenses({projectID: projectDetailVM.fullProjectDetails.projectDetail.Id})">
+                <i class="button button-icon icon ion-pricetags balanced"></i>
                 <p>View Expense Record</p>
             </div>
             <div class="col col-25 text-center" ng-click="projectDetailVM.openCreateNewExpenseModal()">
