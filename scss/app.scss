@@ -121,16 +121,16 @@ div.receipt-placeholder{
   background-size: contain;
 }
 
-div.receipt-placeholder > p,i{
+div.receipt-placeholder > p,i, div.no-entries-placeholder > p,i{
   color: #c8c8c8;
   z-index: -10;
 }
 
-div.receipt-placeholder > i{
+div.receipt-placeholder > i, div.no-entries-placeholder > i{
   font-size: 7em;
 }
 
-div.receipt-placeholder > p{
+div.receipt-placeholder > p, div.no-entries-placeholder > p{
   font-size: 1em;
 }
 
@@ -165,4 +165,8 @@ div.expense-list > div.row{
 .expense-meta .expense-date{
   font-weight: 200;
   font-size: 0.8em;
+}
+
+div.no-entries-placeholder{
+  margin-top: 80px;
 }
