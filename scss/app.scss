@@ -170,3 +170,16 @@ div.expense-list > div.row{
 div.no-entries-placeholder{
   margin-top: 100px;
 }
+
+div.edit-project-name > textarea{
+  line-height: 1em;
+  font-size: 2.4em;
+  resize: none;
+}
+
+div.edit-project-desc > textarea{
+  font-size: 1.2em;
+  line-height: 1em;
+  font-weight: lighter;
+  resize: none;
+}
