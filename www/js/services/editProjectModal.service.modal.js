@@ -51,7 +51,7 @@
             $ionicLoading.show({
                 template: 'Saving Your Latest Changes ..'
             });
-            ProjectService.updateProjectDescriptionAndName($scope.projectDetails)
+            ProjectService.updateProjectDetails($scope.projectDetails)
                 .then(function () {
                     $scope.close();
                     $ionicLoading.show({
