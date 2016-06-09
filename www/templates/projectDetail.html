@@ -1,4 +1,11 @@
 <ion-view>
+
+    <ion-nav-buttons side="right">
+        <button class="button" ng-click="projectDetailVM.openEditProjectModal()">
+            <b>Edit</b>
+        </button>
+    </ion-nav-buttons>
+
     <ion-content>
         <div class="project-name padding">
             <h3>{{projectDetailVM.fullProjectDetails.projectDetail.Name}}</h3>
@@ -15,7 +22,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-location button-positive">
-                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectLocation.Name}}</span>
+                        <span class="dark">{{projectDetailVM.projectDetails.projectLocation.Name}}</span>
                     </button>
                 </div>
             </div>
@@ -28,7 +35,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-ios-timer button-positive">
-                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectTimeTotal}}</span>
+                        <span class="dark">{{projectDetailVM.projectDetails.projectSummary.projectTimeTotal}}</span>
                     </button>
                 </div>
             </div>
@@ -41,7 +48,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-pricetags button-positive">
-                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectExpensesTotal | currency : '£'}}</span>
+                        <span class="dark">{{projectDetailVM.projectDetails.projectSummary.projectExpensesTotal | currency : '£'}}</span>
                     </button>
                 </div>
             </div>
