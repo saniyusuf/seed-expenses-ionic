@@ -29,7 +29,8 @@
             getFullProjectDetails: getFullProjectDetails,
             createNewExpense: createNewExpense,
             getAllExpenses: getAllExpenses,
-            getAllTimeLogs: getAllTimeLogs
+            getAllTimeLogs: getAllTimeLogs,
+            updateProjectDetails: updateProjectDetails
         };
 
         return projectService;
@@ -140,12 +141,12 @@
             return $q.all(projectPromises)
                 .then(function (fullProjectDetailsSuccessResponse) {
                     var fullProjectDetails = {};
-                    fullProjectDetails.projectDetail = fullProjectDetailsSuccessResponse.projectDetailPromise;
-                    fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
-                    fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
+                    projectDetails.projectDetails = fullProjectDetailsSuccessResponse.projectDetailPromise;
+                    projectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
+                    projectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
 
-                    logger.log('Got Full Project Details -> ', fullProjectDetails);
-                    getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
+                    logger.log('Got Full Project Details -> ', projectDetails);
+                    getAllProjectDetailsFromSmartStorePromise.resolve(projectDetails);
                     return getAllProjectDetailsFromSmartStorePromise.promise;
 
                 }, function () {
@@ -199,6 +200,10 @@
                 }, function (allTimeLogsFailureResponse) {
                     return $q.reject(allTimeLogsFailureResponse);
                 });
+        }
+
+        function updateProjectDetails(projectDetails) {
+            return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id');
         }
 
     }
