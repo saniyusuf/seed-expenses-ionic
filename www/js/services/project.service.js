@@ -141,12 +141,12 @@
             return $q.all(projectPromises)
                 .then(function (fullProjectDetailsSuccessResponse) {
                     var fullProjectDetails = {};
-                    projectDetails.projectDetails = fullProjectDetailsSuccessResponse.projectDetailPromise;
-                    projectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
-                    projectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
+                    fullProjectDetails.projectDetails = fullProjectDetailsSuccessResponse.projectDetailPromise;
+                    fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
+                    fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
 
-                    logger.log('Got Full Project Details -> ', projectDetails);
-                    getAllProjectDetailsFromSmartStorePromise.resolve(projectDetails);
+                    logger.log('Got Full Project Details -> ', fullProjectDetails);
+                    getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
                     return getAllProjectDetailsFromSmartStorePromise.promise;
 
                 }, function () {
