@@ -15,7 +15,8 @@
     function EditProjectDetailsModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
         var $scope = $rootScope.$new(),
             editProjectDetailsModalInstanceOptions = {
-                scope: $scope
+                scope: $scope,
+                focusFirstInput: true
             },
         editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
 
