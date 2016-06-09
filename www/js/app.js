@@ -248,10 +248,10 @@ function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading,
     template: "Getting Project's Details"
   });
   return ProjectService.getFullProjectDetails($stateParams.projectID, $stateParams.projectLocationID)
-      .then(function (projectDetail) {
-        logger.log('Full Project Details ->', projectDetail[0]);
+      .then(function (projectDetails) {
+        logger.log('Full Project Details ->', projectDetails[0]);
         $ionicLoading.hide();
-        return $q.resolve(projectDetail);
+        return $q.resolve(projectDetails);
 
       }, function (projectDetailFailureResponse) {
         logger.log('Failed To Get Project Detail -> ', projectDetailFailureResponse);
