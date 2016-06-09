@@ -8,8 +8,8 @@
 
     <ion-content>
         <div class="project-name padding">
-            <h3>{{projectDetailVM.fullProjectDetails.projectDetails.Name}}</h3>
-            <div class="project-details">{{projectDetailVM.fullProjectDetails.projectDetails.mobilecaddy1__Description__c}}</div>
+            <h3>{{projectDetailVM.fullProjectDetails.fullProjectDetails.Name}}</h3>
+            <div class="project-details">{{projectDetailVM.fullProjectDetails.fullProjectDetails.mobilecaddy1__Description__c}}</div>
             <hr>
         </div>
 
@@ -22,7 +22,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-location button-positive">
-                        <span class="dark">{{projectDetailVM.projectDetails.projectLocation.Name}}</span>
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectLocation.Name}}</span>
                     </button>
                 </div>
             </div>
@@ -35,7 +35,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-ios-timer button-positive">
-                        <span class="dark">{{projectDetailVM.projectDetails.projectSummary.projectTimeTotal}}</span>
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectTimeTotal}}</span>
                     </button>
                 </div>
             </div>
@@ -48,7 +48,7 @@
             <div class="row full-image">
                 <div class="col text-center">
                     <button class="button button-outline icon-left ion-pricetags button-positive">
-                        <span class="dark">{{projectDetailVM.projectDetails.projectSummary.projectExpensesTotal | currency : '£'}}</span>
+                        <span class="dark">{{projectDetailVM.fullProjectDetails.projectSummary.projectExpensesTotal | currency : '£'}}</span>
                     </button>
                 </div>
             </div>
