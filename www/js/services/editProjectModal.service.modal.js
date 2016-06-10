@@ -53,7 +53,13 @@
             $ionicLoading.show({
                 template: 'Saving Your Latest Changes ..'
             });
-            ProjectService.updateProjectDetails($scope.projectDetails)
+            var projectDetails = {
+                Id: $scope.projectDetails.Id,
+                mobilecaddy1__Description__c: $scope.projectDetails.mobilecaddy1__Description__c,
+                Name: $scope.projectDetails.Name
+            };
+
+            ProjectService.updateProjectDetails(projectDetails)
                 .then(function () {
                     $scope.close();
                     $ionicLoading.show({
