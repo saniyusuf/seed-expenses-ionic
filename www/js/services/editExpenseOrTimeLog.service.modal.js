@@ -68,7 +68,26 @@
         }
 
         function updateExpenseOrTimeLog() {
+            $ionicLoading.show({
+                template: 'Updating Your Changes!'
+            });
             ProjectService.updateExpenseOrTimeLog($scope.expenseOrTimeLog)
+                .then(function () {
+                    $scope.close();
+                    $ionicLoading.show({
+                        template: 'Your Changes Have Been Saved',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+
+                }, function (updateExpenseOrTimeLogFailureResponse) {
+                    logger.log('Failed To Update Time Or Expense -> ', updateExpenseOrTimeLogFailureResponse);
+                    $ionicLoading.show({
+                        template: 'Failed To Save Your Changes',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
         }
     }
 
