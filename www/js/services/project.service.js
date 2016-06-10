@@ -30,7 +30,8 @@
             createNewExpenseOrTimeLog: createNewExpenseOrTimeLog,
             getAllExpenses: getAllExpenses,
             getAllTimeLogs: getAllTimeLogs,
-            updateProjectDetails: updateProjectDetails
+            updateProjectDetails: updateProjectDetails,
+            updateExpenseOrTimeLog: updateExpenseOrTimeLog
         };
 
         return projectService;
@@ -204,6 +205,10 @@
 
         function updateProjectDetails(projectDetails) {
             return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id');
+        }
+
+        function updateExpenseOrTimeLog(expenseOrTimeLog) {
+            return devUtils.updateRecord(PROJECT_EXPENSES_TABLE_NAME, expenseOrTimeLog, 'Id');
         }
 
     }
