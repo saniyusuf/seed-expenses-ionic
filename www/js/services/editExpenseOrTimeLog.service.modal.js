@@ -28,6 +28,7 @@
 
         function open(expenseOrTimeLog, expenseType) {
             var templateUrl = '';
+            $scope.updateExpenseOrTimeLog = updateExpenseOrTimeLog;
 
             if(expenseType === 'time'){
                 $scope.expenseOrTimeLog = {
@@ -36,7 +37,7 @@
                     mobilecaddy1__Duration_Minutes__c: expenseOrTimeLog.mobilecaddy1__Duration_Minutes__c
                 };
                 templateUrl = editTimeLogModalTemplateUrl;
-                
+
             } else {
                 $scope.expenseOrTimeLog = {
                     Id: expenseOrTimeLog.Id,
