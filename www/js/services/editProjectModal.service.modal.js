@@ -21,14 +21,15 @@
         editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
 
         var editProjectDetailsModal = {
-            open: open,
-            updateProjectDetails: updateProjectDetails
+            open: open
         };
 
         return editProjectDetailsModal;
 
         function open(projectDetails) {
             $scope.projectDetails = projectDetails;
+            $scope.updateProjectDetails = updateProjectDetails;
+
             $ionicModal.fromTemplateUrl(
                 editProjectDetailsModalTemplateUrl,
                 editProjectDetailsModalInstanceOptions
