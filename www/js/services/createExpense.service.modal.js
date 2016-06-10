@@ -8,9 +8,9 @@
         .module('starter.services')
         .factory('CreateTimeAndExpenseModal', CreateTimeAndExpenseModal);
 
-    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading'];
+    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger'];
 
-    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
+    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger) {
         var $scope = $rootScope.$new(),
             createExpenseModalInstanceOptions = {
                 scope: $scope,
@@ -91,28 +91,32 @@
             var newExpense = {
                 "mobilecaddy1__Short_Description__c": $scope.newExpense.description,
                 "Name": 'TMP-' + Date.now(),
-                "mobilecaddy1__Project__c": $scope.projectID
+                "mobilecaddy1__Project__c": $scope.newExpense.projectID,
+                "mobilecaddy1__Expense_Image__c": $scope.newExpense.receiptImage,
+                "mobilecaddy1__Expense_Amount__c" : parseFloat($scope.newExpense.amount)
             };
 
             if(expenseType === 'time'){
-                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration.$modelValue;
+                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration;
             } else {
-                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount.$modelValue;
-                newExpense.mobilecaddy1__Expense_Type__c = $scope.newExpense.expenseType;
+                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
             }
-
-            ProjectService.createNewTimeLogOrExpense(newExpense)
+            
+            ProjectService.createNewExpenseOrTimeLog(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
-                    $ionicLoading.hide();
                     $scope.close();
+                    $ionicLoading.show({
+                        template: 'Expense Successfully Created!',
+                        duration: 1200
+                    });
 
                 }, function (newExpenseFailureResponse) {
-                    logger.log('Successfully Created New Expense -> ', newExpenseFailureResponse);
+                    logger.log('Failed To Create New Expense -> ', newExpenseFailureResponse);
                     $ionicLoading.hide();
                     $ionicLoading.show({
                         template: 'Expense Entry Not Created. Please Try Again',
-                        duration: 800
+                        duration: 1200
                     });
                 });
         }
