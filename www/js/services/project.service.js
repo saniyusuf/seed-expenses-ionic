@@ -27,7 +27,7 @@
         var projectService = {
             getAllProjects: getAllProjects,
             getFullProjectDetails: getFullProjectDetails,
-            createNewExpense: createNewExpense,
+            createNewExpenseOrTimeLog: createNewExpenseOrTimeLog,
             getAllExpenses: getAllExpenses,
             getAllTimeLogs: getAllTimeLogs,
             updateProjectDetails: updateProjectDetails
@@ -159,7 +159,7 @@
             return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
         }
 
-        function createNewExpense(newExpense) {
+        function createNewExpenseOrTimeLog(newExpense) {
             return devUtils.insertRecord(PROJECT_EXPENSES_TABLE_NAME, newExpense)
                 .then(function (createNewExpenseSuccessResponse) {
                     SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
