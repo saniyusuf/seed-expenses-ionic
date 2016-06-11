@@ -9,12 +9,17 @@
         .module('starter.controllers')
         .controller('AllExpensesController', AllExpensesController);
 
-    AllExpensesController.$inject = ['AllExpenses'];
+    AllExpensesController.$inject = ['AllExpenses', 'EditExpenseOrTimeLogModal'];
 
-    function AllExpensesController(AllExpenses) {
+    function AllExpensesController(AllExpenses, EditExpenseOrTimeLogModal) {
         var vm = this;
 
         vm.allExpenses = AllExpenses;
+        vm.openEditExpenseModal = openEditExpenseModal;
+
+        function openEditExpenseModal(expense) {
+            EditExpenseOrTimeLogModal.open(expense, 'expense');
+        }
     }
 
 })();
