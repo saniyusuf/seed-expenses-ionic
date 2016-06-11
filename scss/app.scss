@@ -151,20 +151,22 @@ div.expense-list > div.row{
   box-shadow: 0 0 3px 0 $button-light-border;
 }
 
-.expense-description{
+div.expense-description{
   height: inherit;
   font-weight: 300;
   font-size: 1.2em;
+  margin-bottom: 5px;
 }
 
-.expense-meta .expense-price{
+div.expense-meta div.expense-price{
   font-weight: bold;
   font-size: 1.5em;
 }
 
-.expense-meta .expense-date{
+div.expense-meta div.expense-date{
   font-weight: 200;
-  font-size: 0.8em;
+  font-size: 1em;
+  text-align: right;
 }
 
 div.no-entries-placeholder{
@@ -182,4 +184,22 @@ div.edit-project-desc > textarea{
   line-height: 1em;
   font-weight: lighter;
   resize: none;
+}
+
+.margin{
+  margin: 5px;
+}
+
+img.receipt-image{
+  width: inherit;
+  box-shadow: 0 0 2px 0 $button-light-border;
+  border-radius: 45%;
+}
+
+div.edit-icon{
+  margin-top: 5px;
+}
+
+div.edit-icon > i{
+  font-size: 2em;
 }
