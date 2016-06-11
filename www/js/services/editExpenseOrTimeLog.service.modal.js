@@ -17,8 +17,8 @@
                 scope: $scope,
                 focusFirstInput: true
             },
-            editExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/editTimeLogModal.html',
-            editTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/editExpenseModal.html';
+            editExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/editExpenseModal.html',
+            editTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/editTimeLogModal.html';
 
         var editExpenseOrTimeLogModal = {
             open: open
