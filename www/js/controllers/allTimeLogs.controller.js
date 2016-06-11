@@ -10,12 +10,17 @@
         .module('starter.controllers')
         .controller('AllTimeLogsController', AllTimeLogsController);
 
-    AllTimeLogsController.$inject = ['AllTimeLogs'];
+    AllTimeLogsController.$inject = ['AllTimeLogs', 'EditExpenseOrTimeLogModal'];
 
-    function AllTimeLogsController(AllTimeLogs) {
+    function AllTimeLogsController(AllTimeLogs, EditExpenseOrTimeLogModal) {
         var vm = this;
 
         vm.allTimeLogs = AllTimeLogs;
+        vm.openEditTimeLogModal = openEditTimeLogModal;
+
+        function openEditTimeLogModal(timeLog) {
+            EditExpenseOrTimeLogModal.open(timeLog, 'time');
+        }
     }
 
 })();
