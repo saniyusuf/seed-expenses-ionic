@@ -10,16 +10,30 @@
 
         <div class="expense-list full-image padding" ng-repeat="expense in allExpensesVM.allExpenses">
             <div class="row">
-                <div class="col col-66 item-text-wrap expense-description">
-                    {{expense.mobilecaddy1__Short_Description__c}}
+                <div class="col col-20 item-text-wrap expense-description">
+                    <img ng-src="data:image/png;base64,{{expense.mobilecaddy1__Expense_Image__c}}" class="receipt-image">
                 </div>
 
-                <div class="col expense-meta">
-                    <div class="expense-date">
-                        {{expense.CreatedDate}}
+                <div class="col">
+                    <div class="item-text-wrap expense-description">
+                        {{expense.mobilecaddy1__Short_Description__c}}
                     </div>
-                    <div class="expense-price">
-                        {{expense.mobilecaddy1__Expense_Amount__c | currency: '£'}}
+
+                    <div class="row row-no-padding">
+                        <div class="col col-50 expense-meta">
+                            <div class="expense-price">
+                                {{expense.mobilecaddy1__Expense_Amount__c | currency: '£'}}
+                            </div>
+                        </div>
+                        <div class="col expense-meta">
+                            <div class="expense-date">
+                                {{expense.CreatedDate}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-right edit-icon">
+                        <i class="icon ion-compose balanced" ng-click="allExpensesVM.openEditExpenseModal(expense)"></i>
                     </div>
                 </div>
             </div>
