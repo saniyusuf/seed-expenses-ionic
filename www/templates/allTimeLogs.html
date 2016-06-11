@@ -18,9 +18,15 @@
                     <div class="expense-date">
                         {{timeLog.CreatedDate}}
                     </div>
+
                     <div class="expense-price">
                         {{timeLog.mobilecaddy1__Duration_Minutes__c}}
                     </div>
+
+                    <div class="text-right edit-icon">
+                        <i class="icon ion-compose balanced" ng-click="allTimeLogsVM.openEditTimeLogModal(timeLog)"></i>
+                    </div>
+
                 </div>
             </div>
         </div>
