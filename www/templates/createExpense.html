@@ -22,7 +22,7 @@
 
                 <i class="ion-close-circled dismiss-receipt-icon dark"></i>
 
-                <div class="receipt-placeholder" ng-style="{'background-image':'url(data:image/png;base64,' + newExpense.receiptImage + ')'}">
+                <div ng-click="openImageSelectionPopup()" class="receipt-placeholder" ng-style="{'background-image':'url(data:image/png;base64,' + newExpense.receiptImage + ')'}">
                     <i class="icon ion-images"></i>
                     <p>
                         Add Expense Receipt
