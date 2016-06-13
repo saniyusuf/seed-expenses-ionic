@@ -1,7 +1,12 @@
 
 angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 'starter.controllers', 'ngCordova'])
 
-.run(['$ionicPlatform', 'NetworkService', 'AppRunStatusService', 'UserService', 'SyncService' , function($ionicPlatform, NetworkService, AppRunStatusService, UserService, SyncService) {
+    .constant('PROJECTS_TABLE_NAME', 'MC_Project__ap')
+    .constant('PROJECT_EXPENSES_TABLE_NAME', 'MC_Time_Expense__ap')
+    .constant('PROJECT_LOCATION_TABLE_NAME', 'MC_Project_Location__ap')
+
+.run(['$ionicPlatform', 'NetworkService', 'AppRunStatusService', 'UserService', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ,
+  function($ionicPlatform, NetworkService, AppRunStatusService, UserService, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -66,6 +71,14 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       SyncService.initialSync();
     }
   });
+
+    /**
+     * Keep Tables Synced On Resume
+     */
+    $ionicPlatform.on('resume', function () {
+      SyncService.syncTables([PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
+      SyncService.syncTables([PROJECT_LOCATION_TABLE_NAME], true, 4000 * 60 * 60);
+    });
 
 }])
 
