@@ -8,8 +8,8 @@
 (function () {
     'use strict';
 
-    angular.module('starter.services', [])
-
+    angular
+        .module('starter.services')
         .factory('$cordovaCamera', ['$q', function ($q) {
 
             return {
