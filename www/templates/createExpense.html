@@ -20,7 +20,7 @@
         <div class="row receipt-container">
             <div class="col col-75 col-offset-12-5 expense-receipt-container text-center">
 
-                <i class="ion-close-circled dismiss-receipt-icon dark"></i>
+                <i class="ion-close-circled dismiss-receipt-icon dark" ng-click="clearReceiptImage()"></i>
 
                 <div ng-click="openImageSelectionPopup()" class="receipt-placeholder" ng-style="{'background-image':'url(data:image/png;base64,' + newExpense.receiptImage + ')'}">
                     <i class="icon ion-images"></i>
