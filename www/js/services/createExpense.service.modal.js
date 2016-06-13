@@ -8,16 +8,30 @@
         .module('starter.services')
         .factory('CreateTimeAndExpenseModal', CreateTimeAndExpenseModal);
 
-    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger'];
+    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger', '$ionicPopup'];
 
-    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger) {
+    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger, $ionicPopup) {
         var $scope = $rootScope.$new(),
+            imageSelectionPopupScope = $rootScope.$new(),
             createExpenseModalInstanceOptions = {
                 scope: $scope,
                 focusFirstInput: true
             },
             createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/createExpense.html',
-            createTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/createTimeLog.html';
+            createTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/createTimeLog.html',
+            imageSelectionPopupTemplateUrl = RESOURCE_ROOT + 'templates/imageSelectionPopup.html',
+            imageSelectionPopup = '',
+            imageSelectionPopupInstanceOptions = {
+                templateUrl: imageSelectionPopupTemplateUrl,
+                scope: imageSelectionPopupScope,
+                buttons: [
+                    {
+                        text: 'Cancel' ,
+                        type: 'button-positive'
+                    }
+                ]
+            };
+
         $scope.newExpense = {
             description: '',
             amount: '',
@@ -44,6 +58,7 @@
                 templateUrl = createTimeLogModalTemplateUrl;
 
             } else {
+                $scope.openImageSelectionPopup = openImageSelectionPopup;
                 $scope.newExpense = {
                     description: '',
                     amount: '',
@@ -101,7 +116,7 @@
             } else {
                 newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
             }
-            
+
             ProjectService.createNewExpenseOrTimeLog(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
@@ -119,6 +134,11 @@
                         duration: 1200
                     });
                 });
+        }
+
+        function openImageSelectionPopup() {
+            imageSelectionPopup = $ionicPopup.show(imageSelectionPopupInstanceOptions);
+            console.log();
         }
 
     }
