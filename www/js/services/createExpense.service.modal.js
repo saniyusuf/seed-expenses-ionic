@@ -66,6 +66,7 @@
                 templateUrl = createTimeLogModalTemplateUrl;
 
             } else {
+                $scope.clearReceiptImage = clearReceiptImage;
                 $scope.openImageSelectionPopup = openImageSelectionPopup;
                 $scope.newExpense = {
                     description: '',
@@ -183,6 +184,10 @@
                         duration: 1200
                     });
                 });
+        }
+
+        function clearReceiptImage() {
+            $scope.receiptImage = ''
         }
 
     }
