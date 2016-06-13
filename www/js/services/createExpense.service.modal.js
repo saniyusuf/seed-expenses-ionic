@@ -8,9 +8,9 @@
         .module('starter.services')
         .factory('CreateTimeAndExpenseModal', CreateTimeAndExpenseModal);
 
-    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger', '$ionicPopup'];
+    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger', '$ionicPopup', '$cordovaCamera', '$timeout'];
 
-    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger, $ionicPopup) {
+    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger, $ionicPopup, $cordovaCamera, $timeout) {
         var $scope = $rootScope.$new(),
             imageSelectionPopupScope = $rootScope.$new(),
             createExpenseModalInstanceOptions = {
@@ -30,6 +30,14 @@
                         type: 'button-positive'
                     }
                 ]
+            },
+            receiptImageCameraPluginOptions = {
+                quality: 50,
+                destinationType: 0,
+                encodingType: 1,
+                targetHeight: 250,
+                saveToPhotoAlbum: false,
+                correctOrientation:true
             };
 
         $scope.newExpense = {
@@ -137,8 +145,44 @@
         }
 
         function openImageSelectionPopup() {
+            imageSelectionPopupScope.getReceiptImageFromGallery = getReceiptImageFromGallery;
+            imageSelectionPopupScope.getReceiptImageFromCamera = getReceiptImageFromCamera;
+
             imageSelectionPopup = $ionicPopup.show(imageSelectionPopupInstanceOptions);
-            console.log();
+        }
+
+        function getReceiptImageFromGallery() {
+            receiptImageCameraPluginOptions.sourceType = 2;
+            $cordovaCamera.getPicture(receiptImageCameraPluginOptions)
+                .then(function (receiptImageBase64String) {
+                    $timeout(function () {
+                       $scope.receiptImage = receiptImageBase64String;
+                    });
+
+                }, function () {
+                    $ionicLoading.show({
+                        template: 'Unable To Get Your Image',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
+        }
+
+        function getReceiptImageFromCamera() {
+            receiptImageCameraPluginOptions.sourceType = 1;
+            $cordovaCamera.getPicture(receiptImageCameraPluginOptions)
+                .then(function (receiptImageBase64String) {
+                    $timeout(function () {
+                        $scope.receiptImage = receiptImageBase64String;
+                    });
+
+                }, function () {
+                    $ionicLoading.show({
+                        template: 'Unable To Get Your Image',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
         }
 
     }
