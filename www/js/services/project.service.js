@@ -204,11 +204,25 @@
         }
 
         function updateProjectDetails(projectDetails) {
-            return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id');
+            return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id')
+                .then(function (updateProjectDetailsSuccessResponse) {
+                    SyncService.syncTables([PROJECTS_TABLE_NAME], true, 1000 * 60 * 60);
+                    return $q.resolve(updateProjectDetailsSuccessResponse);
+
+                }, function (updateProjectDetailsFailureResponse) {
+                    return $q.reject(updateProjectDetailsFailureResponse);
+                });
         }
 
         function updateExpenseOrTimeLog(expenseOrTimeLog) {
-            return devUtils.updateRecord(PROJECT_EXPENSES_TABLE_NAME, expenseOrTimeLog, 'Id');
+            return devUtils.updateRecord(PROJECT_EXPENSES_TABLE_NAME, expenseOrTimeLog, 'Id')
+                .then(function (updateExpenseOrTimeLogSuccessResponse) {
+                    SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
+                    return $q.resolve(updateExpenseOrTimeLogSuccessResponse);
+
+                }, function (updateExpenseOrTimeLogFailureResponse) {
+                   return $q.reject(updateExpenseOrTimeLogFailureResponse);
+                });
         }
 
     }
