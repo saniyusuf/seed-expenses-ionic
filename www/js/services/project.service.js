@@ -9,9 +9,9 @@
         .module('starter.services')
         .factory('ProjectService', ProjectService);
 
-    ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService'];
+    ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ];
 
-    function ProjectService($q, devUtils, _, logger, SyncService) {
+    function ProjectService($q, devUtils, _, logger, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
         var getAllProjectsFromSmartStorePromise = $q.defer(),
             getProjectDetailsFromSmartStorePromise = $q.defer(),
             getProjectSummaryFromSmartStorePromise = $q.defer(),
@@ -19,10 +19,7 @@
             getAllProjectDetailsFromSmartStorePromise = $q.defer(),
             getProjectSqlQuery,
             getProjectExpensesSqlQuery,
-            getProjectLocationSqlQuery,
-            PROJECTS_TABLE_NAME = 'MC_Project__ap',
-            PROJECT_EXPENSES_TABLE_NAME = "MC_Time_Expense__ap",
-            PROJECT_LOCATION_TABLE_NAME = "MC_Project_Location__ap";
+            getProjectLocationSqlQuery;
 
         var projectService = {
             getAllProjects: getAllProjects,
