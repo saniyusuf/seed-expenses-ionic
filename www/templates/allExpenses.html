@@ -1,4 +1,9 @@
 <ion-view title="All Expenses">
+
+    <ion-nav-buttons side="right">
+        <mc-sync-spinner></mc-sync-spinner>
+    </ion-nav-buttons>
+
     <ion-content>
 
         <div class="full-image text-center no-entries-placeholder" ng-if="allExpensesVM.allExpenses.length < 1">
