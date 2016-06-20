@@ -20,7 +20,7 @@
         vm.postFeedback = postFeedback;
 
         function postFeedback() {
-            if(vm.feedback.comment === ''){
+            if(vm.feedback.mobilecaddy1__Comment__c === ''){
                 $ionicLoading.show({
                     duration: 1200,
                     noBackdrop: true,
