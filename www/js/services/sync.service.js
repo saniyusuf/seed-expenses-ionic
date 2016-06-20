@@ -25,7 +25,7 @@
 			// {'Name': 'myDummyTable2__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours},
 			{'Name': 'MC_Project__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60},
 			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 4000 * 60 *60},
-			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
+			{'Name': 'MC_Time_Expense__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
 		];
 
 		var appTablesSyncNow = [
