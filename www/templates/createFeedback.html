@@ -7,13 +7,13 @@
                 Feedback
             </div>
             <div class="item item-text-wrap edit-project-desc">
-                <textarea ng-model="feedback.mobilecaddy1__Comment__c" placeholder="tell us what you like or how we can improve"></textarea>
+                <textarea ng-model="createFeedbackVM.feedback.mobilecaddy1__Comment__c" placeholder="tell us what you like or how we can improve"></textarea>
             </div>
         </div>
 
     </ion-content>
 
-    <ion-footer-bar class="bar-positive" ng-click="postFeedback()">
+    <ion-footer-bar class="bar-positive" ng-click="createFeedbackVM.postFeedback()">
         <h1 class="title">Post Feedback</h1>
     </ion-footer-bar>
 
