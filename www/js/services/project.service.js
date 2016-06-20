@@ -68,7 +68,7 @@
 
                     timeAndExpenseProjects = _.where(
                         timeAndExpenseProjectsSuccessResponse.records,
-                        {'mobilecaddy1__Project__c': projectId}
+                        {'mobilecaddy1__Project__c': projectID}
                     );
 
                     angular.forEach(function (timeAndExpenseProject) {
@@ -143,12 +143,11 @@
                     fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
                     fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
 
-                    logger.log('Got Full Project Details -> ', fullProjectDetails);
                     getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
                     return getAllProjectDetailsFromSmartStorePromise.promise;
 
-                }, function () {
-                    getAllProjectDetailsFromSmartStorePromise.reject('Failed To Get All Project Details');
+                }, function (fullProjectDetailFailureResponse) {
+                    getAllProjectDetailsFromSmartStorePromise.reject(fullProjectDetailFailureResponse);
                     return getAllProjectDetailsFromSmartStorePromise.promise;
                 });
         }
@@ -160,7 +159,7 @@
         function createNewExpenseOrTimeLog(newExpense) {
             return devUtils.insertRecord(PROJECT_EXPENSES_TABLE_NAME, newExpense)
                 .then(function (createNewExpenseSuccessResponse) {
-                    SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
+                    SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true);
                     return $q.resolve(createNewExpenseSuccessResponse);
 
                 }, function (createNewExpensesFailureResponse) {
