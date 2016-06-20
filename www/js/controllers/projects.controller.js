@@ -73,7 +73,7 @@
 
         function refreshAndSyncProjects() {
             $log.log('refreshAndSyncProjects');
-            ProjectService.all(false)
+            ProjectService.getAllProjects(false)
                 .then(function(projects) {
                     vm.projects = projects;
                     if (SyncService.getSyncState() != "Syncing") {
@@ -87,7 +87,7 @@
 
         function pullDownToRefreshProjects() {
             $log.log('pullDownToRefreshProjects');
-            ProjectService.all(true)
+            ProjectService.getAllProjects(true)
                 .then(function(projects) {
                     vm.projects = projects;
 
