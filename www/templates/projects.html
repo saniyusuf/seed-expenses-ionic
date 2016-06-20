@@ -12,11 +12,7 @@
             </label>
         </div>
 
-        <ion-refresher on-refresh="projectsVM.pullDownToRefreshProjects()"
-                       pulling-text="Pull to refresh">
-        </ion-refresher>
-
-        <ion-scroll zooming="false" direction="y" id="project-list">
+        <ion-list id="project-list">
             <ion-item
                     class="item mti-item"
                     collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.projectName"
@@ -24,7 +20,7 @@
                 <h3>{{project.Name}}</h3>
                 <p>{{project.mobilecaddy1__Description__c}}&nbsp;</p>
             </ion-item>
-        </ion-scroll>
+        </ion-list>
 
     </ion-content>
 
