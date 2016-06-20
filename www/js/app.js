@@ -4,6 +4,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
     .constant('PROJECTS_TABLE_NAME', 'MC_Project__ap')
     .constant('PROJECT_EXPENSES_TABLE_NAME', 'MC_Time_Expense__ap')
     .constant('PROJECT_LOCATION_TABLE_NAME', 'MC_Project_Location__ap')
+    .constant('FEEDBACK_TABLE_NAME', 'Mobile_Feedback__ap')
 
 .run(['$ionicPlatform', 'NetworkService', 'AppRunStatusService', 'UserService', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ,
   function($ionicPlatform, NetworkService, AppRunStatusService, UserService, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
