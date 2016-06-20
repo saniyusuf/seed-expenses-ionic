@@ -136,6 +136,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       })
 
       .state('tab.project-detail', {
+        cache: false,
         url: '/project-detail/:projectID/:projectLocationID',
         views: {
           'projects-tab': {
