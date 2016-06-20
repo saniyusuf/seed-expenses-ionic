@@ -85,6 +85,11 @@ div.project-info button.button-outline{
   margin-bottom: 5px;
 }
 
+div.project-info button.button-outline.button-positive.activated{
+  background-color: white;
+  color: $positive;
+}
+
 div.project-info div.project-info-icon-desc div.col{
   margin-bottom: -15px;
   font-size: smaller;
