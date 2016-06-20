@@ -246,7 +246,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
   //
   // ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/settings');
+  $urlRouterProvider.otherwise('/tab/projects');
 
 }]);
 
