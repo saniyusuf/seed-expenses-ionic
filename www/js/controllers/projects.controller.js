@@ -36,6 +36,9 @@
         vm.refreshAndSyncProjects = refreshAndSyncProjects;
         vm.pullDownToRefreshProjects = pullDownToRefreshProjects;
         vm.checkIfSyncIsRequired = checkIfSyncIsRequired;
+        vm.clearSearch = function () {
+            vm.projectSearch.searchTerm = '';
+        };
 
         if(SyncService.getSyncState() == 'Complete'){
             getAllProjectsAfterInitialSync();
