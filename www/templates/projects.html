@@ -5,18 +5,23 @@
     </ion-nav-buttons>
 
     <ion-content>
+
         <div class="list list-inset">
-            <label class="item item-input">
+            <div class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input type="search" placeholder="Search" ng-model="projectsVM.projectSearch.projectName">
-            </label>
+                <input type="search" placeholder="Search" ng-model="projectsVM.projectSearch.searchTerm">
+                <button ng-if="projectsVM.projectSearch.searchTerm.length"
+                        class="button button-icon ion-close-round search-clear-button"
+                        ng-click="projectsVM.clearSearch()">
+                </button>
+            </div>
         </div>
 
         <ion-scroll id="project-list" zooming="false" direction="y">
             <ion-list>
                 <ion-item
                         class="item mti-item"
-                        collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.projectName"
+                        collection-repeat="project in projectsVM.projects | filter:projectsVM.projectSearch.searchTerm"
                         ui-sref="tab.project-detail({projectID : project.Id, projectLocationID : project.mobilecaddy1__MC_Project_Location__c})">
                     <h3>{{project.Name}}</h3>
                     <p>{{project.mobilecaddy1__Description__c}}&nbsp;</p>
