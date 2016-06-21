@@ -10,9 +10,10 @@
     .module('starter.services')
     .factory('NetworkService', NetworkService);
 
-  NetworkService.$inject = ['$rootScope', 'SyncService', 'logger'];
+  NetworkService.$inject = ['$rootScope', 'SyncService', 'logger', 'devUtils', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME', 'FEEDBACK_TABLE_NAME'];
 
-  function NetworkService($rootScope, SyncService, logger) {
+  function NetworkService($rootScope, SyncService, logger, devUtils, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME, FEEDBACK_TABLE_NAME) {
+
   	return {
 	    networkEvent: networkEvent,
 
@@ -30,7 +31,53 @@
         // SyncService.syncTables(['Table_x__ap', 'Table_y__ap'], true);
         //
         // TODO (TH) Are we doing this, I've not looked at the flows at the time of writing?
+
+          devUtils.dirtyTables()
+              .then(function (dirtyTableNames) {
+                  if(dirtyTableNames.length > 0){
+                      var dirtyTablesToBeSynced = [];
+                      angular.forEach(dirtyTableNames, function (dirtyTableName) {
+                          switch (dirtyTableName){
+                              case PROJECTS_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECTS_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              case PROJECT_EXPENSES_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECT_EXPENSES_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              case PROJECT_LOCATION_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECT_EXPENSES_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 4 * 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              default:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: dirtyTableName,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                          }
+                      });
+
+                      SyncService.syncTables(dirtyTablesToBeSynced);
+                  }
+              });
       }
+
       if (pastStatus != status) {
         $rootScope.$emit('networkState', {state : status});
       }
