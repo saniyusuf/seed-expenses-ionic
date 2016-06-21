@@ -56,7 +56,7 @@
 
                               case PROJECT_LOCATION_TABLE_NAME:
                                   dirtyTablesToBeSynced.push({
-                                      Name: PROJECT_EXPENSES_TABLE_NAME,
+                                      Name: PROJECT_LOCATION_TABLE_NAME,
                                       syncWithoutLocalUpdates: true,
                                       maxTableAge: 4 * 1000 * 60 * 60
                                   });
