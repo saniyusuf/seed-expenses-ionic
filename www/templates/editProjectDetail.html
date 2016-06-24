@@ -4,38 +4,46 @@
         <button class="button icon ion-close-round button-icon" ng-click="close()"></button>
 
     </ion-header-bar>
-    <ion-content>
 
-        <div class="card">
-            <div class="item item-divider">
-                Edit Project's Name
+    <form name="editProjectForm">
+        <ion-content>
+
+            <div class="card">
+                <div class="item item-divider">
+                    Edit Project's Name
+                </div>
+                <div class="item item-text-wrap edit-project-name">
+                    <textarea ng-model="projectDetails.Name"></textarea>
+                </div>
             </div>
-            <div class="item item-text-wrap edit-project-name">
-                <textarea ng-model="projectDetails.Name"></textarea>
+
+            <div class="card">
+                <div class="item item-divider">
+                    Edit Project's Description
+                </div>
+                <div class="item item-text-wrap edit-project-desc">
+                    <textarea ng-model="projectDetails.mobilecaddy1__Description__c"></textarea>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="item item-divider">
-                Edit Project's Description
+            <div class="padding-left balanced">
+                <b>Preview</b>
             </div>
-            <div class="item item-text-wrap edit-project-desc">
-                <textarea ng-model="projectDetails.mobilecaddy1__Description__c"></textarea>
+            <div class="project-name padding-bottom padding-left padding-right">
+                <h3>{{projectDetails.Name}}</h3>
+                <div class="project-details">{{projectDetails.mobilecaddy1__Description__c}}</div>
             </div>
-        </div>
 
-        <div class="padding-left balanced">
-            <b>Preview</b>
-        </div>
-        <div class="project-name padding-bottom padding-left padding-right">
-            <h3>{{projectDetails.Name}}</h3>
-            <div class="project-details">{{projectDetails.mobilecaddy1__Description__c}}</div>
-        </div>
+        </ion-content>
 
-    </ion-content>
+        <ion-footer-bar ng-if="editProjectForm.$pristine" class="disabled-footer">
+            <h1 class="title">Update Projects</h1>
+        </ion-footer-bar>
 
-    <ion-footer-bar class="bar-positive" ng-click="updateProjectDetails()">
-        <h1 class="title">Update Projects</h1>
-    </ion-footer-bar>
+        <ion-footer-bar ng-if="!editProjectForm.$pristine" class="bar-positive" ng-click="updateProjectDetails()">
+            <h1 class="title">Update Projects</h1>
+        </ion-footer-bar>
+    </form>
+
 
 </ion-modal-view>
