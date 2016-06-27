@@ -3,6 +3,7 @@
   <div ng-switch="syncState">
   	<ion-spinner ng-switch-when="syncing" icon="dots"></ion-spinner>
   	<i ng-switch-when="online" class='icon ion-android-cloud-done'></i>
+  	<i ng-switch-when="syncFailed" class='icon ion-alert-circled energized'></i>
   	<i ng-switch-default class='icon ion-android-cloud-outline disabled'></i>
   </div>
 </button>
