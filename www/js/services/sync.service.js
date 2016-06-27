@@ -219,18 +219,22 @@
 		function syncTables(tablesToSync){
 			return new Promise(function(resolve, reject) {
 				// TODO - put some local notification stuff in here.
-				doSyncTables(tablesToSync).then(function(res){
-					// console.log("syncTables", res);
-					$rootScope.$broadcast('syncTables', {result : "Complete"});
-					setSyncState("Complete");
-					// NOTE - Commented out for the time being - see TOPS-96
-					if (!res || res.status == 100999) {
-						LocalNotificationService.setLocalNotification();
-					} else {
-						LocalNotificationService.cancelNotification();
-					}
-					resolve(res);
-				});
+				doSyncTables(tablesToSync)
+					.then(function(res){
+						// console.log("syncTables", res);
+						$rootScope.$broadcast('syncTables', {result : "Complete"});
+						setSyncState("Complete");
+						// NOTE - Commented out for the time being - see TOPS-96
+						if (!res || res.status == 100999) {
+							LocalNotificationService.setLocalNotification();
+						} else {
+							LocalNotificationService.cancelNotification();
+						}
+						resolve(res);
+					}, function () {
+						$rootScope.$broadcast('sync:failed');
+						reject();
+					});
 				// IT ALWAYS RESOLVES
 				// }).catch(function(e){
 				// 	logger.warn('syncTables', e);
