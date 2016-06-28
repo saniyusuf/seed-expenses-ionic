@@ -21,7 +21,7 @@
               scope.syncState = "syncing";
             }
 
-            var deregesterFailedSync = $scope.$on('sync:failed', function (event, args) {
+            var deregisterFailedSync = scope.$on('sync:failed', function (event, args) {
               scope.syncState = 'syncFailed';
               scope.$apply();
             });
@@ -54,7 +54,7 @@
             scope.$on('$destroy',
                 deregisterHandleSyncTables,
                 deregisterHandleNetworkState,
-                deregesterFailedSync
+                deregisterFailedSync
             );
           },
           templateUrl: $window.RESOURCE_ROOT + 'templates/mcSyncSpinner.html'
