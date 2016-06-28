@@ -226,14 +226,12 @@
 						setSyncState("Complete");
 						// NOTE - Commented out for the time being - see TOPS-96
 						if (!res || res.status == 100999) {
+							$rootScope.$broadcast('sync:failed');
 							LocalNotificationService.setLocalNotification();
 						} else {
 							LocalNotificationService.cancelNotification();
 						}
 						resolve(res);
-					}, function () {
-						$rootScope.$broadcast('sync:failed');
-						reject();
 					});
 				// IT ALWAYS RESOLVES
 				// }).catch(function(e){
