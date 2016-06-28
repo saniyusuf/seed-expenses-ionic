@@ -159,7 +159,11 @@
         function createNewExpenseOrTimeLog(newExpense) {
             return devUtils.insertRecord(PROJECT_EXPENSES_TABLE_NAME, newExpense)
                 .then(function (createNewExpenseSuccessResponse) {
-                    SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true);
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
                     return $q.resolve(createNewExpenseSuccessResponse);
 
                 }, function (createNewExpensesFailureResponse) {
@@ -202,7 +206,11 @@
         function updateProjectDetails(projectDetails) {
             return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id')
                 .then(function (updateProjectDetailsSuccessResponse) {
-                    SyncService.syncTables([PROJECTS_TABLE_NAME], true, 1000 * 60 * 60);
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
                     return $q.resolve(updateProjectDetailsSuccessResponse);
 
                 }, function (updateProjectDetailsFailureResponse) {
@@ -213,7 +221,11 @@
         function updateExpenseOrTimeLog(expenseOrTimeLog) {
             return devUtils.updateRecord(PROJECT_EXPENSES_TABLE_NAME, expenseOrTimeLog, 'Id')
                 .then(function (updateExpenseOrTimeLogSuccessResponse) {
-                    SyncService.syncTables([PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
                     return $q.resolve(updateExpenseOrTimeLogSuccessResponse);
 
                 }, function (updateExpenseOrTimeLogFailureResponse) {
