@@ -21,7 +21,7 @@
               scope.syncState = "syncing";
             }
 
-            var deregisterFailedSync = scope.$on('sync:failed', function (event, args) {
+            var deregisterFailedSync = $rootScope.$on('sync:failed', function (event, args) {
               scope.syncState = 'syncFailed';
               scope.$apply();
             });
