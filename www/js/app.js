@@ -105,7 +105,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
             controller: 'AllExpensesController',
             controllerAs: 'allExpensesVM',
             resolve: {
-              AllExpenses: allExpenses
+              AllExpenses: allTimeLogs
             }
           }
         }
@@ -286,8 +286,8 @@ function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading,
       });
 }
 
-allExpenses.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
-function allExpenses(ProjectService, $ionicLoading, $stateParams) {
+allTimeLogs.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
+function allTimeLogs(ProjectService, $ionicLoading, $stateParams) {
   $ionicLoading.show({
     template: 'Getting Expenses ..'
   });
@@ -295,6 +295,12 @@ function allExpenses(ProjectService, $ionicLoading, $stateParams) {
   return ProjectService.getAllExpenses($stateParams.projectID)
       .then(function (allExpenses) {
         $ionicLoading.hide();
+        angular.forEach(allExpenses, function (expense) {
+          expense.CreatedDate = new Date(expense.CreatedDate).getTime();
+        });
+        allExpenses.sort(function (a, b) {
+          return b.CreatedDate - a.CreatedDate;
+        });
         return allExpenses;
 
       }, function (allExpensesFailureResponse) {
@@ -314,6 +320,12 @@ function allTimeLogs(ProjectService, $ionicLoading, $stateParams) {
   return ProjectService.getAllTimeLogs($stateParams.projectID)
       .then(function (allTimeLogs) {
         $ionicLoading.hide();
+        angular.forEach(allTimeLogs, function (timeLog) {
+          timeLog.CreatedDate = new Date(timeLog.CreatedDate).getTime();
+        });
+        allTimeLogs.sort(function (a, b) {
+          return b.CreatedDate - a.CreatedDate;
+        });
         return allTimeLogs;
 
       }, function (allTimeLogsFailureResponse) {
