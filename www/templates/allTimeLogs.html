@@ -21,11 +21,11 @@
 
                 <div class="col expense-meta">
                     <div class="expense-date">
-                        {{timeLog.CreatedDate}}
+                        {{timeLog.CreatedDate | date}}
                     </div>
 
                     <div class="expense-price">
-                        {{timeLog.mobilecaddy1__Duration_Minutes__c}}
+                        {{timeLog.mobilecaddy1__Duration_Minutes__c}}&nbsp;<span class="mins-text">mins</span>
                     </div>
 
                     <div class="text-right edit-icon">
