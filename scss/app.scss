@@ -198,6 +198,8 @@ img.receipt-image{
   width: inherit;
   box-shadow: 0 0 2px 0 $button-light-border;
   border-radius: 45%;
+  min-height: 60px;
+  height: auto;
 }
 
 div.edit-icon{
