@@ -165,6 +165,7 @@ div.expense-description{
 div.expense-meta div.expense-price{
   font-weight: bold;
   font-size: 1.5em;
+  text-align: right;
 }
 
 div.expense-meta div.expense-date{
@@ -224,4 +225,9 @@ div.edit-icon > i{
 
 .disabled-footer > h1{
   color: #a0a0a0;
+}
+
+span.mins-text{
+  font-weight: 100;
+  font-size: 1em;
 }
