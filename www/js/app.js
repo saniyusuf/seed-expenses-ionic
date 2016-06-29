@@ -105,7 +105,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
             controller: 'AllExpensesController',
             controllerAs: 'allExpensesVM',
             resolve: {
-              AllExpenses: allTimeLogs
+              AllExpenses: allExpenses
             }
           }
         }
@@ -286,8 +286,8 @@ function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading,
       });
 }
 
-allTimeLogs.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
-function allTimeLogs(ProjectService, $ionicLoading, $stateParams) {
+allExpenses.$inject = ['ProjectService', '$ionicLoading', '$stateParams'];
+function allExpenses(ProjectService, $ionicLoading, $stateParams) {
   $ionicLoading.show({
     template: 'Getting Expenses ..'
   });
