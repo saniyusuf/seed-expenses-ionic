@@ -98,6 +98,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
     })
 
       .state('tab.all-expenses', {
+        cache: false,
         url: '/all-expenses/:projectID',
         views: {
           'projects-tab': {
@@ -112,6 +113,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       })
 
       .state('tab.all-time-logs', {
+        cache: false,
         url: '/all-time-logs/:projectID',
         views: {
           'projects-tab': {
@@ -126,6 +128,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       })
 
       .state('tab.projects', {
+        cache: false,
         url: '/projects',
         views: {
           'projects-tab': {
