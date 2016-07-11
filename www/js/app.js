@@ -77,8 +77,36 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
      * Keep Tables Synced On Resume
      */
     $ionicPlatform.on('resume', function () {
-      SyncService.syncTables([PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME], true, 1000 * 60 * 60);
-      SyncService.syncTables([PROJECT_LOCATION_TABLE_NAME], true, 4000 * 60 * 60);
+      var tablesToSync = [
+        {
+          Name: PROJECTS_TABLE_NAME,
+          syncWithoutLocalUpdates: true,
+          maxTableAge: 1000 * 60 * 60
+        },
+        {
+          Name: PROJECT_EXPENSES_TABLE_NAME,
+          syncWithoutLocalUpdates: true,
+          maxTableAge: 1000 * 60 * 60
+        },
+        {
+          Name: PROJECT_LOCATION_TABLE_NAME,
+          syncWithoutLocalUpdates: true,
+          maxTableAge: 4000 * 60 * 60
+        }
+      ];
+      SyncService.syncTables(tablesToSync);
+    });
+
+    /**
+     * Check If Dirty Tables Exist
+     */
+    $ionicPlatform.on('online', function () {
+      devUtils.dirtyTables()
+          .then(function (dirtyTables) {
+            if (dirtyTables.length > 0){
+              $rootScope.$broadcast('sync:failed');
+            }
+          });
     });
 
 }])
@@ -240,14 +268,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'starter.services', 
       }
     });
 
-  // ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !
-  //
-  //    A H O Y     H O Y     ! ! !
-  //
-  //    Change this to call you home page/tab/etc
-  //    At the moment it points to the MobileCaddy Settings tab
-  //
-  // ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !  ! ! ! ! !
+
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/projects');
 
