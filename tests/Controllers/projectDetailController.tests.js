@@ -17,12 +17,15 @@ describe('Project Detail Controller', function () {
             });
 
             expect(projectDetail).toBeDefined();
+        }));
 
-            it('Should Have An fullProjectDetails Property Equal To FullProjectDetails Stub', function () {
-                expect(projectDetail.fullProjectDetails).toEqual(fullProjectDetailsStub);
-            })
+        it('Should Have An fullProjectDetails Property Equal To FullProjectDetails Stub', inject(function ($controller) {
+            var projectDetail = $controller('ProjectDetailController', {
+                FullProjectDetails: fullProjectDetailsStub
+            });
 
-        }))
+            expect(projectDetail.fullProjectDetails).toEqual(fullProjectDetailsStub);
+        }));
 
     });
 
