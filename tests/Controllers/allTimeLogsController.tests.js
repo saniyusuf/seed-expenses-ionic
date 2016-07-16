@@ -9,8 +9,7 @@ describe('All Time Logs Controller Test', function () {
         var allTimeLogsStub = [{
                 id: '1',
                 description: 'dummy test mock data'
-            }]
-            ;
+            }];
 
         it('Should Be Defined', inject(function ($controller) {
             var allExpenseController = $controller('AllTimeLogsController', {
@@ -19,11 +18,16 @@ describe('All Time Logs Controller Test', function () {
 
             expect(allExpenseController).toBeDefined();
 
-            it('Should Have An allTimeLogs Property Equal To AllTimeLogs Stub', function () {
-                expect(allExpenseController.allTimeLogs).toEqual(allTimeLogsStub);
-            })
+        }));
 
-        }))
+        it('Should Have An allTimeLogs Property Equal To AllTimeLogs Stub', inject(function ($controller) {
+            var allExpenseController = $controller('AllTimeLogsController', {
+                AllTimeLogs: allTimeLogsStub
+            });
+
+            expect(allExpenseController.allTimeLogs).toEqual(allTimeLogsStub);
+
+        }));
 
     });
 
