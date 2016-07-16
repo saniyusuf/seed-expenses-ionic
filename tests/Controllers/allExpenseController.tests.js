@@ -9,8 +9,7 @@ describe('All Expenses Controller Test', function () {
         var allExpenseStub = [{
             id: '1',
             description: 'dummy test mock data'
-        }]
-        ;
+        }];
 
         it('Should Be Defined', inject(function ($controller) {
             var allExpenseController = $controller('AllExpensesController', {
@@ -19,11 +18,16 @@ describe('All Expenses Controller Test', function () {
 
             expect(allExpenseController).toBeDefined();
 
-            it('Should Have An allExpenses Equal To AllExpenses Stub', function () {
-                expect(allExpenseController.allExpenses).toEqual(allExpenseStub);
-            })
+        }));
 
-        }))
+        it('Should Have An allExpenses Equal To AllExpenses Stub', inject(function ($controller) {
+            var allExpenseController = $controller('AllExpensesController', {
+                AllExpenses: allExpenseStub
+            });
+
+            expect(allExpenseController.allExpenses).toEqual(allExpenseStub);
+
+        }));
 
     });
 
