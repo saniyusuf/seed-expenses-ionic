@@ -3,7 +3,7 @@
  */
 
 
-fdescribe('All Expenses Controller Test', function () {
+describe('All Expenses Controller Test', function () {
     var allExpenseStub,
         editExpenseOrTimeLogModalStub = {
             open: function (expense, type) {}
