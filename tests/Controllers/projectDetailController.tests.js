@@ -3,7 +3,7 @@
  */
 
 
-fdescribe('Project Detail Controller', function () {
+describe('Project Detail Controller', function () {
     var fullProjectDetailsStub,
         createTimeAndExpenseModalStub,
         editProjectDetailsModalStub,
