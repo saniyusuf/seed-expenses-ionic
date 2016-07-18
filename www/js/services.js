@@ -129,6 +129,55 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
 })();
 /**
+ * Created by Sani Yusuf on 13/06/2016.
+ */
+
+// install   :   cordova plugin add cordova-plugin-camera
+// link      :   https://github.com/apache/cordova-plugin-camera
+
+(function () {
+    'use strict';
+
+    angular
+        .module('starter.services')
+        .factory('$cordovaCamera', ['$q', function ($q) {
+
+            return {
+                getPicture: function (options) {
+                    var q = $q.defer();
+
+                    if (!navigator.camera) {
+                        q.resolve(null);
+                        return q.promise;
+                    }
+
+                    navigator.camera.getPicture(function (imageData) {
+                        q.resolve(imageData);
+                    }, function (err) {
+                        q.reject(err);
+                    }, options);
+
+                    return q.promise;
+                },
+
+                cleanup: function () {
+                    var q = $q.defer();
+
+                    navigator.camera.cleanup(function () {
+                        q.resolve();
+                    }, function (err) {
+                        q.reject(err);
+                    });
+
+                    return q.promise;
+                }
+            };
+        }]);
+
+
+})();
+
+/**
  * Created by Sani Yusuf on 02/06/2016.
  */
 
@@ -136,18 +185,48 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
     'use strict';
     angular
         .module('starter.services')
-        .factory('CreateExpenseModal', CreateExpenseModal);
+        .factory('CreateTimeAndExpenseModal', CreateTimeAndExpenseModal);
 
-    CreateExpenseModal.$inject = ['$ionicModal', '$rootScope'];
+    CreateTimeAndExpenseModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading', 'logger', '$ionicPopup', '$cordovaCamera', '$timeout'];
 
-    function CreateExpenseModal($ionicModal, $rootScope) {
+    function CreateTimeAndExpenseModal($ionicModal, $rootScope, ProjectService, $ionicLoading, logger, $ionicPopup, $cordovaCamera, $timeout) {
         var $scope = $rootScope.$new(),
-            createExpenseModalInstance = {},
+            imageSelectionPopupScope = $rootScope.$new(),
             createExpenseModalInstanceOptions = {
                 scope: $scope,
                 focusFirstInput: true
             },
-            createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/createExpense.html';
+            createExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/createExpense.html',
+            createTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/createTimeLog.html',
+            imageSelectionPopupTemplateUrl = RESOURCE_ROOT + 'templates/imageSelectionPopup.html',
+            imageSelectionPopup = '',
+            imageSelectionPopupInstanceOptions = {
+                templateUrl: imageSelectionPopupTemplateUrl,
+                scope: imageSelectionPopupScope,
+                buttons: [
+                    {
+                        text: 'Cancel' ,
+                        type: 'button-positive'
+                    }
+                ]
+            },
+            receiptImageCameraPluginOptions = {
+                quality: 50,
+                destinationType: 0,
+                encodingType: 1,
+                targetHeight: 250,
+                saveToPhotoAlbum: false,
+                correctOrientation:true
+            };
+
+        $scope.newExpense = {
+            description: '',
+            amount: '',
+            receiptImage: '',
+            expenseType: ''
+        };
+        $scope.createNewExpense = createNewExpense;
+        $scope.createNewTimeLog = createNewTimeLog;
 
         var createExpenseModal = {
             open: open
@@ -155,36 +234,139 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
         return createExpenseModal;
 
-        function open() {
-            $scope = {
-                expenseDescription: '',
-                expenseAmount: '',
-                close: close()
-            };
+        function open(projectID, expenseType) {
+            var templateUrl = '';
+            if(expenseType === 'time'){
+                $scope.newExpense = {
+                    description: '',
+                    duration: '',
+                    projectID: projectID
+                };
+                templateUrl = createTimeLogModalTemplateUrl;
+
+            } else {
+                $scope.clearReceiptImage = clearReceiptImage;
+                $scope.openImageSelectionPopup = openImageSelectionPopup;
+                $scope.newExpense = {
+                    description: '',
+                    amount: '',
+                    receiptImage: '',
+                    projectID: projectID,
+                    expenseType: ''
+                };
+                templateUrl = createExpenseModalTemplateUrl;
+            }
 
             return $ionicModal.fromTemplateUrl(
-                createExpenseModalTemplateUrl,
+                templateUrl,
                 createExpenseModalInstanceOptions
 
             ).then(function (modalInstance) {
 
                 $scope.close = function () {
-                    return modalInstance.hide()
-                        .then(function (modalInstance) {
-                            return modalInstance.remove();
-                        });
+                   closeAndRemove(modalInstance);
                 };
 
-                createExpenseModalInstance = modalInstance;
                 return modalInstance.show();
             });
         }
 
-        function close() {
+        function closeAndRemove(modalInstance) {
+            return modalInstance.hide()
+                .then(function () {
+                    return modalInstance.remove();
+                });
         }
 
-        function saveExpense() {
+        function createNewTimeLog() {
+            createNewTimeLogOrExpense('time');
+        }
 
+        function createNewExpense() {
+            createNewTimeLogOrExpense('expense');
+        }
+
+        function createNewTimeLogOrExpense(expenseType) {
+            $ionicLoading.show({
+                template: 'Submitting You New Expense ..'
+            });
+
+            var newExpense = {
+                "mobilecaddy1__Short_Description__c": $scope.newExpense.description,
+                "Name": 'TMP-' + Date.now(),
+                "mobilecaddy1__Project__c": $scope.newExpense.projectID,
+                "mobilecaddy1__Expense_Image__c": $scope.newExpense.receiptImage,
+                "mobilecaddy1__Expense_Amount__c" : parseFloat($scope.newExpense.amount)
+            };
+
+            if(expenseType === 'time'){
+                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration;
+            } else {
+                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
+            }
+
+            ProjectService.createNewExpenseOrTimeLog(newExpense)
+                .then(function (newExpenseSuccessResponse) {
+                    logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
+                    $scope.close();
+                    $ionicLoading.show({
+                        template: 'Expense Successfully Created!',
+                        duration: 1200
+                    });
+
+                }, function (newExpenseFailureResponse) {
+                    logger.log('Failed To Create New Expense -> ', newExpenseFailureResponse);
+                    $ionicLoading.hide();
+                    $ionicLoading.show({
+                        template: 'Expense Entry Not Created. Please Try Again',
+                        duration: 1200
+                    });
+                });
+        }
+
+        function openImageSelectionPopup() {
+            imageSelectionPopupScope.getReceiptImageFromGallery = getReceiptImageFromGallery;
+            imageSelectionPopupScope.getReceiptImageFromCamera = getReceiptImageFromCamera;
+
+            imageSelectionPopup = $ionicPopup.show(imageSelectionPopupInstanceOptions);
+        }
+
+        function getReceiptImageFromGallery() {
+            receiptImageCameraPluginOptions.sourceType = 2;
+            $cordovaCamera.getPicture(receiptImageCameraPluginOptions)
+                .then(function (receiptImageBase64String) {
+                    $timeout(function () {
+                       $scope.receiptImage = receiptImageBase64String;
+                    });
+
+                }, function () {
+                    $ionicLoading.show({
+                        template: 'Unable To Get Your Image',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
+        }
+
+        function getReceiptImageFromCamera() {
+            receiptImageCameraPluginOptions.sourceType = 1;
+            $cordovaCamera.getPicture(receiptImageCameraPluginOptions)
+                .then(function (receiptImageBase64String) {
+                    $timeout(function () {
+                        $scope.receiptImage = receiptImageBase64String;
+                    });
+
+                }, function () {
+                    $ionicLoading.show({
+                        template: 'Unable To Get Your Image',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
+        }
+
+        function clearReceiptImage() {
+            $scope.receiptImage = '';
         }
 
     }
@@ -651,6 +833,217 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
 })();
 /**
+ * Created by Sani Yusuf on 10/06/2016.
+ */
+
+
+(function () {
+    'use strict';
+    angular
+        .module('starter.services')
+        .factory('EditExpenseOrTimeLogModal', EditExpenseOrTimeLogModal);
+
+    EditExpenseOrTimeLogModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading'];
+
+    function EditExpenseOrTimeLogModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
+        var $scope = $rootScope.$new(),
+            editExpenseOrTimeLogModalInstanceOptions = {
+                scope: $scope,
+                focusFirstInput: true
+            },
+            editExpenseModalTemplateUrl = RESOURCE_ROOT + 'templates/editExpenseModal.html',
+            editTimeLogModalTemplateUrl = RESOURCE_ROOT + 'templates/editTimeLogModal.html';
+
+        var editExpenseOrTimeLogModal = {
+            open: open
+        };
+
+        return editExpenseOrTimeLogModal;
+
+        function open(expenseOrTimeLog, expenseType) {
+            var templateUrl = '';
+            $scope.updateExpenseOrTimeLog = updateExpenseOrTimeLog;
+
+            if(expenseType === 'time'){
+                $scope.expenseOrTimeLog = {
+                    Id: expenseOrTimeLog.Id,
+                    mobilecaddy1__Short_Description__c: expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                    mobilecaddy1__Duration_Minutes__c: expenseOrTimeLog.mobilecaddy1__Duration_Minutes__c
+                };
+                templateUrl = editTimeLogModalTemplateUrl;
+
+            } else {
+                $scope.expenseOrTimeLog = {
+                    Id: expenseOrTimeLog.Id,
+                    mobilecaddy1__Short_Description__c: expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                    mobilecaddy1__Expense_Amount__c: expenseOrTimeLog.mobilecaddy1__Expense_Amount__c,
+                    mobilecaddy1__Expense_Image__c: expenseOrTimeLog.mobilecaddy1__Expense_Image__c
+                };
+                templateUrl = editExpenseModalTemplateUrl;
+            }
+
+            $ionicModal.fromTemplateUrl(
+                templateUrl,
+                editExpenseOrTimeLogModalInstanceOptions
+
+            ).then(function (modalInstance) {
+                $scope.close = function () {
+                    closeAndRemove(modalInstance);
+                };
+                return modalInstance.show();
+            });
+        }
+
+        function closeAndRemove(modalInstance) {
+            return modalInstance.hide()
+                .then(function () {
+                    return modalInstance.remove();
+                });
+        }
+
+        function updateExpenseOrTimeLog() {
+            $ionicLoading.show({
+                template: 'Updating Your Changes!'
+            });
+            ProjectService.updateExpenseOrTimeLog($scope.expenseOrTimeLog)
+                .then(function () {
+                    $scope.close();
+                    $ionicLoading.show({
+                        template: 'Your Changes Have Been Saved',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+
+                }, function (updateExpenseOrTimeLogFailureResponse) {
+                    logger.log('Failed To Update Time Or Expense -> ', updateExpenseOrTimeLogFailureResponse);
+                    $ionicLoading.show({
+                        template: 'Failed To Save Your Changes',
+                        noBackdrop: true,
+                        duration: 1200
+                    });
+                });
+        }
+    }
+
+})();
+
+/**
+ * Created by Sani Yusuf on 09/06/2016.
+ */
+
+
+(function () {
+    'use strict';
+
+    angular
+        .module('starter.services')
+        .factory('EditProjectDetailsModal', EditProjectDetailsModal);
+
+    EditProjectDetailsModal.$inject = ['$ionicModal', '$rootScope', 'ProjectService', '$ionicLoading'];
+
+    function EditProjectDetailsModal($ionicModal, $rootScope, ProjectService, $ionicLoading) {
+        var $scope = $rootScope.$new(),
+            editProjectDetailsModalInstanceOptions = {
+                scope: $scope,
+                focusFirstInput: true
+            },
+        editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
+
+        var editProjectDetailsModal = {
+            open: open
+        };
+
+        return editProjectDetailsModal;
+
+        function open(projectDetails) {
+            $scope.projectDetails = projectDetails;
+            $scope.updateProjectDetails = updateProjectDetails;
+
+            $ionicModal.fromTemplateUrl(
+                editProjectDetailsModalTemplateUrl,
+                editProjectDetailsModalInstanceOptions
+
+            ).then(function (modalInstance) {
+                $scope.close = function () {
+                    closeAndRemove(modalInstance);
+                };
+                return modalInstance.show();
+            });
+        }
+
+        function closeAndRemove(modalInstance) {
+            return modalInstance.hide()
+                .then(function () {
+                    return modalInstance.remove();
+                });
+        }
+
+        function updateProjectDetails() {
+            $ionicLoading.show({
+                template: 'Saving Your Latest Changes ..'
+            });
+            var projectDetails = {
+                Id: $scope.projectDetails.Id,
+                mobilecaddy1__Description__c: $scope.projectDetails.mobilecaddy1__Description__c,
+                Name: $scope.projectDetails.Name
+            };
+
+            ProjectService.updateProjectDetails(projectDetails)
+                .then(function () {
+                    $scope.close();
+                    $ionicLoading.show({
+                        template: 'Your Changes Have Been Saved!',
+                        duration: 1200
+                    });
+
+                }, function () {
+                    $ionicLoading.show({
+                        template: "Couldn't Save Your Changes. Please Try Again Later",
+                        duration: 1200
+                    });
+                });
+        }
+
+    }
+
+
+})();
+
+/**
+ * Created by Sani Yusuf on 20/06/2016.
+ */
+
+(function () {
+    'use strict';
+
+    angular
+        .module('starter.services')
+        .factory('FeedbackService', FeedbackService);
+
+    FeedbackService.$inject = ['$q', 'devUtils', 'SyncService', 'FEEDBACK_TABLE_NAME'];
+
+    function FeedbackService($q, devUtils, SyncService, FEEDBACK_TABLE_NAME) {
+        var feedbackService = {
+            postFeedback: postFeedback
+        };
+        
+        return feedbackService;
+        
+        function postFeedback(feedBack) {
+            return devUtils.insertRecord(FEEDBACK_TABLE_NAME, feedBack)
+                .then(function (postFeedbackSuccessResponse) {
+                    SyncService.syncTables([FEEDBACK_TABLE_NAME], true);
+                    return $q.resolve(postFeedbackSuccessResponse);
+
+                }, function (postFeedbackFailureResponse) {
+                    return $q.reject(postFeedbackFailureResponse);
+                });
+        }
+
+    }
+
+})();
+/**
  * LocalNotificationService
  *
  * @description Enables device local notifications using Cordova Local-Notification Plugin
@@ -893,9 +1286,10 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
     .module('starter.services')
     .factory('NetworkService', NetworkService);
 
-  NetworkService.$inject = ['$rootScope', 'SyncService', 'logger'];
+  NetworkService.$inject = ['$rootScope', 'SyncService', 'logger', 'devUtils', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME', 'FEEDBACK_TABLE_NAME'];
 
-  function NetworkService($rootScope, SyncService, logger) {
+  function NetworkService($rootScope, SyncService, logger, devUtils, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME, FEEDBACK_TABLE_NAME) {
+
   	return {
 	    networkEvent: networkEvent,
 
@@ -913,7 +1307,53 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
         // SyncService.syncTables(['Table_x__ap', 'Table_y__ap'], true);
         //
         // TODO (TH) Are we doing this, I've not looked at the flows at the time of writing?
+
+          devUtils.dirtyTables()
+              .then(function (dirtyTableNames) {
+                  if(dirtyTableNames.length > 0){
+                      var dirtyTablesToBeSynced = [];
+                      angular.forEach(dirtyTableNames, function (dirtyTableName) {
+                          switch (dirtyTableName){
+                              case PROJECTS_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECTS_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              case PROJECT_EXPENSES_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECT_EXPENSES_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              case PROJECT_LOCATION_TABLE_NAME:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: PROJECT_LOCATION_TABLE_NAME,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 4 * 1000 * 60 * 60
+                                  });
+                                  break;
+
+                              default:
+                                  dirtyTablesToBeSynced.push({
+                                      Name: dirtyTableName,
+                                      syncWithoutLocalUpdates: true,
+                                      maxTableAge: 1000 * 60 * 60
+                                  });
+                                  break;
+
+                          }
+                      });
+
+                      SyncService.syncTables(dirtyTablesToBeSynced);
+                  }
+              });
       }
+
       if (pastStatus != status) {
         $rootScope.$emit('networkState', {state : status});
       }
@@ -996,162 +1436,240 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
  * Created by Sani Yusuf on 10/05/2016.
  */
 
-angular
-    .module('starter.services')
-    .factory('ProjectService', ProjectService);
+(function () {
+    'use strict';
 
-ProjectService.$inject = ['$q', 'devUtils', '_', 'logger'];
+    angular
+        .module('starter.services')
+        .factory('ProjectService', ProjectService);
 
-function ProjectService($q, devUtils, _, logger) {
-    var getAllProjectsFromSmartStorePromise = $q.defer(),
-        getProjectDetailsFromSmartStorePromise = $q.defer(),
-        getProjectSummaryFromSmartStorePromise = $q.defer(),
-        getProjectLocationFromSmartStorePromise = $q.defer(),
-        getAllProjectDetailsFromSmartStorePromise = $q.defer(),
-        getProjectSqlQuery,
-        getProjectExpensesSqlQuery,
-        getProjectLocationSqlQuery,
-        projectsTableName = 'MC_Project__ap',
-        projectExpensesTableName = "MC_Time_Expense__ap",
-        projectLocationTableName = "MC_Project_Location__ap";
+    ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ];
 
-    var projectService = {
-        getAllProjects: getAllProjects,
-        getFullProjectDetails: getFullProjectDetails,
-        createNewExpense: createNewExpense
-    };
+    function ProjectService($q, devUtils, _, logger, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
+        var getAllProjectsFromSmartStorePromise = $q.defer(),
+            getProjectDetailsFromSmartStorePromise = $q.defer(),
+            getProjectSummaryFromSmartStorePromise = $q.defer(),
+            getProjectLocationFromSmartStorePromise = $q.defer(),
+            getAllProjectDetailsFromSmartStorePromise = $q.defer(),
+            getProjectSqlQuery,
+            getProjectExpensesSqlQuery,
+            getProjectLocationSqlQuery;
 
-    return projectService;
+        var projectService = {
+            getAllProjects: getAllProjects,
+            getFullProjectDetails: getFullProjectDetails,
+            createNewExpenseOrTimeLog: createNewExpenseOrTimeLog,
+            getAllExpenses: getAllExpenses,
+            getAllTimeLogs: getAllTimeLogs,
+            updateProjectDetails: updateProjectDetails,
+            updateExpenseOrTimeLog: updateExpenseOrTimeLog
+        };
 
-    function getAllProjects() {
-        return devUtils.readRecords(projectsTableName, [])
-            .then(function (projectsRecordsSuccessResponse) {
-                getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
-                return getAllProjectsFromSmartStorePromise.promise;
+        return projectService;
 
-            }, function (projectsRecordsFailureResponse) {
-                getAllProjectsFromSmartStorePromise.reject(projectsRecordsFailureResponse);
-                return getAllProjectsFromSmartStorePromise.promise;
-            });
-    }
+        function getAllProjects() {
+            return devUtils.readRecords(PROJECTS_TABLE_NAME, [])
+                .then(function (projectsRecordsSuccessResponse) {
+                    getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
+                    return getAllProjectsFromSmartStorePromise.promise;
 
-    function getProjectSummary(projectID) {
-        var projectTimeTotal = 0;
-        var projectExpensesTotal = 0;
-        var timeAndExpenseProjects;
+                }, function (projectsRecordsFailureResponse) {
+                    getAllProjectsFromSmartStorePromise.reject(projectsRecordsFailureResponse);
+                    return getAllProjectsFromSmartStorePromise.promise;
+                });
+        }
 
-        getProjectExpensesSqlQuery =
-            "SELECT * FROM {" + projectExpensesTableName + "} " +
-            "WHERE {" + projectExpensesTableName + ":mobilecaddy1__Project__c} = '" + projectID + "';";
-        logger.log('Get Time & Expenses Total Smart SQL Query -> ', getProjectSqlQuery);
+        function getProjectSummary(projectID) {
+            var projectTimeTotal = 0;
+            var projectExpensesTotal = 0;
+            var timeAndExpenseProjects;
 
-        return devUtils.smartSql(getProjectExpensesSqlQuery)
-            .then(function (timeAndExpenseProjectsSuccessResponse) {
-                if(!timeAndExpenseProjectsSuccessResponse.records.length || timeAndExpenseProjectsSuccessResponse.records.length < 1){
+            getProjectExpensesSqlQuery =
+                "SELECT * FROM {" + PROJECT_EXPENSES_TABLE_NAME + "} " +
+                "WHERE {" + PROJECT_EXPENSES_TABLE_NAME + ":mobilecaddy1__Project__c} = '" + projectID + "';";
+            logger.log('Get Time & Expenses Total Smart SQL Query -> ', getProjectSqlQuery);
+
+            return devUtils.smartSql(getProjectExpensesSqlQuery)
+                .then(function (timeAndExpenseProjectsSuccessResponse) {
+                    if(!timeAndExpenseProjectsSuccessResponse.records.length || timeAndExpenseProjectsSuccessResponse.records.length < 1){
+                        getProjectSummaryFromSmartStorePromise.resolve({
+                            projectTimeTotal: projectTimeTotal,
+                            projectExpensesTotal: projectExpensesTotal
+                        });
+
+                        return getProjectSummaryFromSmartStorePromise.promise;
+                    }
+
+                    timeAndExpenseProjects = _.where(
+                        timeAndExpenseProjectsSuccessResponse.records,
+                        {'mobilecaddy1__Project__c': projectID}
+                    );
+
+                    angular.forEach(function (timeAndExpenseProject) {
+                        if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
+                            projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
+                        }
+
+                        if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c)){
+                            projectExpensesTotal += timeAndExpenseProject.mobilecaddy1__Expense_Amount__c;
+                        }
+                    });
+
                     getProjectSummaryFromSmartStorePromise.resolve({
                         projectTimeTotal: projectTimeTotal,
                         projectExpensesTotal: projectExpensesTotal
                     });
-
                     return getProjectSummaryFromSmartStorePromise.promise;
-                }
 
-                timeAndExpenseProjects = _.where(
-                    timeAndExpenseProjectsSuccessResponse.records,
-                    {'mobilecaddy1__Project__c': projectId}
-                );
-
-                angular.forEach(function (timeAndExpenseProject) {
-                    if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
-                        projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
-                    }
-
-                    if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c)){
-                        projectExpensesTotal += timeAndExpenseProject.mobilecaddy1__Expense_Amount__c;
-                    }
+                }, function (timeAndExpenseProjectsFailureResponse) {
+                    getProjectSummaryFromSmartStorePromise.reject(timeAndExpenseProjectsFailureResponse);
+                    return getProjectSummaryFromSmartStorePromise.promise;
                 });
 
-                getProjectSummaryFromSmartStorePromise.resolve({
-                    projectTimeTotal: projectTimeTotal,
-                    projectExpensesTotal: projectExpensesTotal
+        }
+
+        function getProjectDetail(projectID) {
+            getProjectSqlQuery =
+                "SELECT * FROM {" + PROJECTS_TABLE_NAME + "} " +
+                "WHERE {" + PROJECTS_TABLE_NAME + ":Id} = '" + projectID + "';";
+            logger.log('Get Projects Smart SQL Query -> ', getProjectSqlQuery);
+            return devUtils.smartSql(getProjectSqlQuery)
+                .then(function (projectSuccessResponse) {
+                    logger.log('Successfully Got Project Detail -> ', projectSuccessResponse.records[0]);
+                    getProjectDetailsFromSmartStorePromise.resolve(projectSuccessResponse.records[0]);
+                    return getProjectDetailsFromSmartStorePromise.promise;
+
+                }, function (projectFailureResponse) {
+                    getProjectDetailsFromSmartStorePromise.reject(projectFailureResponse);
+                    return getProjectDetailsFromSmartStorePromise.promise;
                 });
-                return getProjectSummaryFromSmartStorePromise.promise;
+        }
 
-            }, function (timeAndExpenseProjectsFailureResponse) {
-                getProjectSummaryFromSmartStorePromise.reject(timeAndExpenseProjectsFailureResponse);
-                return getProjectSummaryFromSmartStorePromise.promise;
-            });
+        function getProjectLocation(projectLocationID){
+            getProjectLocationSqlQuery =
+                "SELECT * FROM {" + PROJECT_LOCATION_TABLE_NAME + "} " +
+                "WHERE {" + PROJECT_LOCATION_TABLE_NAME + ":Id} = '" + projectLocationID + "';";
+            logger.log('Get Project Location SQL Query -> ', getProjectLocationSqlQuery);
+
+            return devUtils.smartSql(getProjectLocationSqlQuery)
+                .then(function (projectLocationSuccessResponse) {
+                    logger.log('Project Location Successfully Gotten -> ', projectLocationSuccessResponse.records[0]);
+                    getProjectLocationFromSmartStorePromise.resolve(projectLocationSuccessResponse.records[0]);
+                    return getProjectLocationFromSmartStorePromise.promise;
+
+                }, function (projectLocationFailureResponse) {
+                    logger.log('Failed To Get Project Location -> ', projectLocationFailureResponse);
+                    getProjectLocationFromSmartStorePromise.reject(projectLocationFailureResponse);
+                    return getProjectLocationFromSmartStorePromise.promise;
+                });
+        }
+
+        function getFullProjectDetails(projectID, projectLocationID) {
+            var projectPromises = {
+                projectDetailPromise: getProjectDetail(projectID),
+                projectSummaryPromise: getProjectSummary(projectID),
+                projectLocationPromise: getProjectLocation(projectLocationID)
+            };
+            return $q.all(projectPromises)
+                .then(function (fullProjectDetailsSuccessResponse) {
+                    var fullProjectDetails = {};
+                    fullProjectDetails.projectDetails = fullProjectDetailsSuccessResponse.projectDetailPromise;
+                    fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
+                    fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
+
+                    getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
+                    return getAllProjectDetailsFromSmartStorePromise.promise;
+
+                }, function (fullProjectDetailFailureResponse) {
+                    getAllProjectDetailsFromSmartStorePromise.reject(fullProjectDetailFailureResponse);
+                    return getAllProjectDetailsFromSmartStorePromise.promise;
+                });
+        }
+
+        function isNullOrUndefined(variableToBeChecked) {
+            return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
+        }
+
+        function createNewExpenseOrTimeLog(newExpense) {
+            return devUtils.insertRecord(PROJECT_EXPENSES_TABLE_NAME, newExpense)
+                .then(function (createNewExpenseSuccessResponse) {
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
+                    return $q.resolve(createNewExpenseSuccessResponse);
+
+                }, function (createNewExpensesFailureResponse) {
+                    return $q.reject(createNewExpensesFailureResponse);
+                });
+        }
+
+        function getAllExpenses(projectID) {
+            return devUtils.readRecords(PROJECT_EXPENSES_TABLE_NAME, [])
+                .then(function (allExpensesSuccessResponse) {
+                    var allExpenses = [];
+                    angular.forEach(allExpensesSuccessResponse.records, function (expense) {
+                        if(!isNullOrUndefined(expense.mobilecaddy1__Expense_Amount__c) && expense.mobilecaddy1__Project__c == projectID){
+                            allExpenses.push(expense);
+                        }
+                    });
+                    return $q.resolve(allExpenses);
+
+                }, function (allExpensesFailureResponse) {
+                    return $q.reject(allExpensesFailureResponse);
+                });
+        }
+
+        function getAllTimeLogs(projectID) {
+            return devUtils.readRecords(PROJECT_EXPENSES_TABLE_NAME, [])
+                .then(function (allTimeLogsSuccessResponse) {
+                    var allExpenses = [];
+                    angular.forEach(allTimeLogsSuccessResponse.records, function (expense) {
+                        if(!isNullOrUndefined(expense.mobilecaddy1__Duration_Minutes__c) && expense.mobilecaddy1__Project__c == projectID){
+                            allExpenses.push(expense);
+                        }
+                    });
+                    return $q.resolve(allExpenses);
+
+                }, function (allTimeLogsFailureResponse) {
+                    return $q.reject(allTimeLogsFailureResponse);
+                });
+        }
+
+        function updateProjectDetails(projectDetails) {
+            return devUtils.updateRecord(PROJECTS_TABLE_NAME, projectDetails, 'Id')
+                .then(function (updateProjectDetailsSuccessResponse) {
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
+                    return $q.resolve(updateProjectDetailsSuccessResponse);
+
+                }, function (updateProjectDetailsFailureResponse) {
+                    return $q.reject(updateProjectDetailsFailureResponse);
+                });
+        }
+
+        function updateExpenseOrTimeLog(expenseOrTimeLog) {
+            return devUtils.updateRecord(PROJECT_EXPENSES_TABLE_NAME, expenseOrTimeLog, 'Id')
+                .then(function (updateExpenseOrTimeLogSuccessResponse) {
+                    SyncService.syncTables([{
+                        Name : PROJECT_EXPENSES_TABLE_NAME,
+                        syncWithoutLocalUpdates: true,
+                        maxTableAge: 1000 * 60 * 60
+                    }]);
+                    return $q.resolve(updateExpenseOrTimeLogSuccessResponse);
+
+                }, function (updateExpenseOrTimeLogFailureResponse) {
+                   return $q.reject(updateExpenseOrTimeLogFailureResponse);
+                });
+        }
 
     }
 
-    function getProjectDetail(projectID) {
-        getProjectSqlQuery =
-            "SELECT * FROM {" + projectsTableName + "} " +
-            "WHERE {" + projectsTableName + ":Id} = '" + projectID + "';";
-        logger.log('Get Projects Smart SQL Query -> ', getProjectSqlQuery);
-        return devUtils.smartSql(getProjectSqlQuery)
-            .then(function (projectSuccessResponse) {
-                logger.log('Successfully Got Project Detail -> ', projectSuccessResponse.records[0]);
-                getProjectDetailsFromSmartStorePromise.resolve(projectSuccessResponse.records[0]);
-                return getProjectDetailsFromSmartStorePromise.promise;
-
-            }, function (projectFailureResponse) {
-                getProjectDetailsFromSmartStorePromise.reject(projectFailureResponse);
-                return getProjectDetailsFromSmartStorePromise.promise;
-            });
-    }
-
-    function getProjectLocation(projectLocationID){
-        getProjectLocationSqlQuery =
-            "SELECT * FROM {" + projectLocationTableName + "} " +
-            "WHERE {" + projectLocationTableName + ":Id} = '" + projectLocationID + "';";
-        logger.log('Get Project Location SQL Query -> ', getProjectLocationSqlQuery);
-
-        return devUtils.smartSql(getProjectLocationSqlQuery)
-            .then(function (projectLocationSuccessResponse) {
-                logger.log('Project Location Successfully Gotten -> ', projectLocationSuccessResponse.records[0]);
-                getProjectLocationFromSmartStorePromise.resolve(projectLocationSuccessResponse.records[0]);
-                return getProjectLocationFromSmartStorePromise.promise;
-
-            }, function (projectLocationFailureResponse) {
-                logger.log('Failed To Get Project Location -> ', projectLocationFailureResponse);
-                getProjectLocationFromSmartStorePromise.reject(projectLocationFailureResponse);
-                return getProjectLocationFromSmartStorePromise.promise;
-            });
-    }
-
-    function getFullProjectDetails(projectID, projectLocationID) {
-        var projectPromises = {
-            projectDetailPromise: getProjectDetail(projectID),
-            projectSummaryPromise: getProjectSummary(projectID),
-            projectLocationPromise: getProjectLocation(projectLocationID)
-        };
-        return $q.all(projectPromises)
-            .then(function (fullProjectDetailsSuccessResponse) {
-                var fullProjectDetails = {};
-                fullProjectDetails.projectDetail = fullProjectDetailsSuccessResponse.projectDetailPromise;
-                fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
-                fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
-
-                logger.log('Got Full Project Details -> ', fullProjectDetails);
-                getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
-                return getAllProjectDetailsFromSmartStorePromise.promise;
-
-            }, function () {
-                getAllProjectDetailsFromSmartStorePromise.reject('Failed To Get All Project Details');
-                return getAllProjectDetailsFromSmartStorePromise.promise;
-            });
-    }
-
-    function isNullOrUndefined(variableToBeChecked) {
-        return variableToBeChecked === null || typeof variableToBeChecked === 'undefined';
-    }
-    
-    function createNewExpense() {
-        
-    }
-
-}
+})();
 
 
 /**
@@ -1181,7 +1699,7 @@ function ProjectService($q, devUtils, _, logger) {
 			// {'Name': 'myDummyTable2__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : fourHours},
 			{'Name': 'MC_Project__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60},
 			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 4000 * 60 *60},
-			{'Name': 'MC_Project_Location__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
+			{'Name': 'MC_Time_Expense__ap', 'syncWithoutLocalUpdates': true, 'maxTableAge' : 1000 * 60 *60}
 		];
 
 		var appTablesSyncNow = [
@@ -1375,18 +1893,20 @@ function ProjectService($q, devUtils, _, logger) {
 		function syncTables(tablesToSync){
 			return new Promise(function(resolve, reject) {
 				// TODO - put some local notification stuff in here.
-				doSyncTables(tablesToSync).then(function(res){
-					// console.log("syncTables", res);
-					$rootScope.$broadcast('syncTables', {result : "Complete"});
-					setSyncState("Complete");
-					// NOTE - Commented out for the time being - see TOPS-96
-					if (!res || res.status == 100999) {
-						LocalNotificationService.setLocalNotification();
-					} else {
-						LocalNotificationService.cancelNotification();
-					}
-					resolve(res);
-				});
+				doSyncTables(tablesToSync)
+					.then(function(res){
+						// console.log("syncTables", res);
+						$rootScope.$broadcast('syncTables', {result : "Complete"});
+						setSyncState("Complete");
+						// NOTE - Commented out for the time being - see TOPS-96
+						if (!res || res.status == 100999) {
+							$rootScope.$broadcast('sync:failed');
+							LocalNotificationService.setLocalNotification();
+						} else {
+							LocalNotificationService.cancelNotification();
+						}
+						resolve(res);
+					});
 				// IT ALWAYS RESOLVES
 				// }).catch(function(e){
 				// 	logger.warn('syncTables', e);

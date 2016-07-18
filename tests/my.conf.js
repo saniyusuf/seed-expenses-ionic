@@ -19,12 +19,15 @@ module.exports = function(config) {
       '../www/js/app.js',
       '../www/js/services/*module.js',
       '../www/js/services/*.js',
-      '../www/js/controllers.js',
+      '../www/js/controllers/*module.js',
+      '../www/js/controllers/*.js',
       '../node_modules/es6-promise/dist/es6-promise.js',
       '../node_modules/angular-mocks/angular-mocks.js',
       '../node_modules/underscore/underscore-min.js',
       // '**/syncService.tests.js',
-      '**/*tests.js',
+      'Services/userService.tests.js',
+      'Controllers/projectDetailController.tests.js',
+      // '**/*tests.js',
       '../node_modules/mobilecaddy-codeflow/js/mcUtilsMock.js'
     ],
 
@@ -32,6 +35,7 @@ module.exports = function(config) {
     // list of files to exclude
     exclude: [
       '../www/js/services.js',
+      '../www/js/controller.js',
       '../www/lib/js/mobilecaddy-utils.min.js',
       '../www/lib/js/angular-ios9-uiwebview.patch.js',
     ],
