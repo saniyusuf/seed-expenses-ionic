@@ -26,7 +26,7 @@ module.exports = function(config) {
       '../node_modules/underscore/underscore-min.js',
       // '**/syncService.tests.js',
       'Services/userService.tests.js',
-      'Controllers/projectDetailController.tests.js',
+      'Controllers/**.js',
       // '**/*tests.js',
       '../node_modules/mobilecaddy-codeflow/js/mcUtilsMock.js'
     ],
