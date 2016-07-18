@@ -2,34 +2,47 @@
  * Created by Sani Yusuf on 09/07/2016.
  */
 
+describe('All Time Logs Controller', function () {
+    var allTimeLogStub,
+        editExpenseOrTimeLogModalStub = {
+            open: function (time, type) {}
+        },
+        controllerDependencies;
 
-describe('All Time Logs Controller Test', function () {
     beforeEach(module('starter.controllers'));
     beforeEach(function () {
-        var allTimeLogsStub = [{
-                id: '1',
-                description: 'dummy test mock data'
-            }];
-
-        it('Should Be Defined', inject(function ($controller) {
-            var allExpenseController = $controller('AllTimeLogsController', {
-                AllTimeLogs: allTimeLogsStub
-            });
-
-            expect(allExpenseController).toBeDefined();
-
-        }));
-
-        it('Should Have An allTimeLogs Property Equal To AllTimeLogs Stub', inject(function ($controller) {
-            var allExpenseController = $controller('AllTimeLogsController', {
-                AllTimeLogs: allTimeLogsStub
-            });
-
-            expect(allExpenseController.allTimeLogs).toEqual(allTimeLogsStub);
-
-        }));
-
+        allTimeLogStub = [{
+            id: '1',
+            duration: 1234
+        }];
+        controllerDependencies = {
+            AllTimeLogs: allTimeLogStub,
+            EditExpenseOrTimeLogModal: editExpenseOrTimeLogModalStub
+        };
     });
 
+    it('Should Be Defined', inject(function ($controller) {
+        var allTimeLogsController = $controller('AllTimeLogsController', controllerDependencies);
+        expect(allTimeLogsController).toBeDefined();
+    }));
+
+    it('Should Have An allExpenses Equal To AllTimeLogs Stub', inject(function ($controller) {
+        var allTimeLogsController = $controller('AllTimeLogsController', controllerDependencies);
+        expect(allTimeLogsController.allTimeLogs).toEqual(allTimeLogStub);
+    }));
+
+    it('Should Edit Expense With Passed Expense', inject(function ($controller) {
+        var timeStub = {
+            id: '1',
+            duration: 1234
+        };
+
+        var allTimeLogsController = $controller('AllTimeLogsController', controllerDependencies);
+        spyOn(editExpenseOrTimeLogModalStub, 'open');
+        allTimeLogsController.openEditTimeLogModal(timeStub);
+
+        expect(editExpenseOrTimeLogModalStub.open).toHaveBeenCalledWith(timeStub, 'time');
+    }));
 
 });
+
