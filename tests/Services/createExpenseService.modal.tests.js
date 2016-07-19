@@ -119,7 +119,6 @@ describe('Create Expense Modal Service', function () {
 
         expect(fromTemplateUrlParams).toBeDefined();
         expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
-        expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
         expect(fromTemplateUrlParams.templateUrl).toContain('createTimeLog');
     }));
 
@@ -147,7 +146,6 @@ describe('Create Expense Modal Service', function () {
 
         expect(fromTemplateUrlParams).toBeDefined();
         expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
-        expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
         expect(fromTemplateUrlParams.templateUrl).toContain('createExpense');
     }));
 
@@ -173,7 +171,6 @@ describe('Create Expense Modal Service', function () {
         };
 
         expect(fromTemplateUrlParams).toBeDefined();
-        expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
         expect(fromTemplateUrlParams.templateOptions.scope.newExpense).toEqual(newExpenseStub);
         expect(fromTemplateUrlParams.templateUrl).toContain('createExpense');
     }));
