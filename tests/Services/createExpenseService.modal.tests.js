@@ -15,6 +15,7 @@ describe('Create Expense Modal Service', function () {
         projectIDStub,
         fromTemplateUrlParams,
         $ionicModalInstanceStub;
+
     beforeEach(module('starter.services'));
 
     beforeEach(function () {

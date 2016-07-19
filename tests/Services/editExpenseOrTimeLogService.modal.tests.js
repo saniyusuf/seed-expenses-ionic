@@ -3,81 +3,83 @@
  */
 
 window.RESOURCE_ROOT = '';
-var projectServiceMock,
-    $cordovaNetworkMock,
-    $cordovaLocalNotificationMock,
-    $ionicModalMock,
-    $ionicLoadingMock,
-    fromTemplateUrlParams,
-    $ionicModalInstanceStub,
-    editExpenseOrTimeLogModal;
 
-beforeEach(module('starter.services'));
+describe('Edit Expense Or Time Log Service Modal', function () {
 
-beforeEach(function () {
+    var $cordovaNetworkMock,
+        $cordovaLocalNotificationMock,
+        $ionicModalMock,
+        $ionicLoadingMock,
+        fromTemplateUrlParams,
+        $ionicModalInstanceStub,
+        editExpenseOrTimeLogModal;
+    
+    beforeEach(module('starter.services'));
 
-    //CordovaLocalNotification Mock
-    $cordovaLocalNotificationMock = jasmine.createSpyObj('$cordovaLocalNotification', ['cancel', 'isScheduled', 'schedule', 'update']);
-    $cordovaLocalNotificationMock.cancel.and.callFake(function(){
-        return new Promise(function(resolve, reject) {
-            resolve('ok');
+    beforeEach(function () {
+
+
+        //CordovaLocalNotification Mock
+        $cordovaLocalNotificationMock = jasmine.createSpyObj('$cordovaLocalNotification', ['cancel', 'isScheduled', 'schedule', 'update']);
+        $cordovaLocalNotificationMock.cancel.and.callFake(function(){
+            return new Promise(function(resolve, reject) {
+                resolve('ok');
+            });
         });
-    });
-    $cordovaLocalNotificationMock.isScheduled.and.callFake(function(id){
-        return new Promise(function(resolve, reject) {
-            resolve(false);
+        $cordovaLocalNotificationMock.isScheduled.and.callFake(function(id){
+            return new Promise(function(resolve, reject) {
+                resolve(false);
+            });
         });
-    });
-    $cordovaLocalNotificationMock.schedule.and.callFake(function(obj){
-        return new Promise(function(resolve, reject) {
-            resolve('ok');
+        $cordovaLocalNotificationMock.schedule.and.callFake(function(obj){
+            return new Promise(function(resolve, reject) {
+                resolve('ok');
+            });
         });
-    });
-    $cordovaLocalNotificationMock.update.and.callFake(function(obj){
-        return new Promise(function(resolve, reject) {
-            resolve('ok');
+        $cordovaLocalNotificationMock.update.and.callFake(function(obj){
+            return new Promise(function(resolve, reject) {
+                resolve('ok');
+            });
         });
-    });
 
-    //$cordovaNetwork Mock
-    $cordovaNetworkMock = jasmine.createSpyObj('$cordovaNetwork', ['isOnline']);
-    $cordovaNetworkMock.isOnline.and.callFake(function(){
-        return true;
-    });
+        //$cordovaNetwork Mock
+        $cordovaNetworkMock = jasmine.createSpyObj('$cordovaNetwork', ['isOnline']);
+        $cordovaNetworkMock.isOnline.and.callFake(function(){
+            return true;
+        });
 
-    //$ionicLoading Mock
-    $ionicLoadingMock = jasmine.createSpyObj('$ionicLoading', ['show', 'hide']);
+        //$ionicLoading Mock
+        $ionicLoadingMock = jasmine.createSpyObj('$ionicLoading', ['show', 'hide']);
 
-    // $ionicModal Mock
-    $ionicModalMock = {
-        fromTemplateUrl: function (templateUrl, templateOptions) {
-            fromTemplateUrlParams = {
-                templateUrl: templateUrl,
-                templateOptions: templateOptions
+        // $ionicModal Mock
+        $ionicModalMock = {
+            fromTemplateUrl: function (templateUrl, templateOptions) {
+                fromTemplateUrlParams = {
+                    templateUrl: templateUrl,
+                    templateOptions: templateOptions
+                }
             }
-        }
-    };
+        };
 
-    module(function ($provide) {
-        $provide.value('$ionicModal', $ionicModalMock);
-        $provide.value('$cordovaLocalNotification', $cordovaLocalNotificationMock);
-        $provide.value('$cordovaNetwork', $cordovaNetworkMock);
-        $provide.value('PROJECTS_TABLE_NAME', '');
-        $provide.value('PROJECT_EXPENSES_TABLE_NAME', '');
-        $provide.value('PROJECT_LOCATION_TABLE_NAME', '');
-        $provide.value('$ionicLoading', $ionicLoadingMock);
+        module(function ($provide) {
+            $provide.value('$ionicModal', $ionicModalMock);
+            $provide.value('$cordovaLocalNotification', $cordovaLocalNotificationMock);
+            $provide.value('$cordovaNetwork', $cordovaNetworkMock);
+            $provide.value('PROJECTS_TABLE_NAME', '');
+            $provide.value('PROJECT_EXPENSES_TABLE_NAME', '');
+            $provide.value('PROJECT_LOCATION_TABLE_NAME', '');
+            $provide.value('$ionicLoading', $ionicLoadingMock);
+        });
+
     });
 
-});
+    beforeEach(inject(function (_EditExpenseOrTimeLogModal_) {
+        editExpenseOrTimeLogModal = _EditExpenseOrTimeLogModal_;
+        $ionicModalInstanceStub = {
+            show: angular.noop
+        }
+    }));
 
-beforeEach(inject(function (_EditExpenseOrTimeLogModal_) {
-    editExpenseOrTimeLogModal = _EditExpenseOrTimeLogModal_;
-    $ionicModalInstanceStub = {
-        show: angular.noop
-    }
-}));
-
-fdescribe('Edit Expense Or Time Log Service Modal', function () {
 
     it('Should Be Defined', function () {
         expect(editExpenseOrTimeLogModal).toBeDefined();
