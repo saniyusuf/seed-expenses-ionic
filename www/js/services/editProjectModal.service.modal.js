@@ -18,7 +18,7 @@
                 scope: $scope,
                 focusFirstInput: true
             },
-        editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
+            editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
 
         var editProjectDetailsModal = {
             open: open

@@ -27,6 +27,9 @@ module.exports = function(config) {
       // '**/syncService.tests.js',
       'Services/userService.tests.js',
       'Controllers/**.js',
+      'Services/createExpenseService.modal.tests.js',
+      'Services/editExpenseOrTimeLogService.modal.tests.js',
+      'Services/editProjectModalService.modal.tests.js',
       // '**/*tests.js',
       '../node_modules/mobilecaddy-codeflow/js/mcUtilsMock.js'
     ],
