@@ -3,13 +3,13 @@
  */
 
 
-describe('Project Detail Controller', function () {
+fdescribe('Project Detail Controller', function () {
     var fullProjectDetailsStub,
         createTimeAndExpenseModalStub,
         editProjectDetailsModalStub,
         controllerDependencies;
     beforeEach(module('starter.controllers'));
-    beforeEach(function () {
+    beforeEach(inject(function ($rootScope) {
         fullProjectDetailsStub = {
             projectDetails: {
                 id: '1',
@@ -25,10 +25,11 @@ describe('Project Detail Controller', function () {
         controllerDependencies = {
             FullProjectDetails: fullProjectDetailsStub,
             CreateTimeAndExpenseModal: createTimeAndExpenseModalStub,
-            EditProjectDetailsModal: editProjectDetailsModalStub
+            EditProjectDetailsModal: editProjectDetailsModalStub,
+            $scope: $rootScope.$new()
         };
 
-    });
+    }));
 
     it('Should Be Defined', inject(function ($controller) {
         var projectDetailController = $controller('ProjectDetailController', controllerDependencies);
@@ -81,6 +82,20 @@ describe('Project Detail Controller', function () {
 
         expect(editProjectDetailsModalStub.open)
             .toHaveBeenCalledWith(fullProjectDetailsStub.projectDetails);
+
+    }));
+
+    it('Should Change Project Details With Event Sent From Modal', inject(function ($controller, $rootScope) {
+        var projectDetailController = $controller('ProjectDetailController', controllerDependencies);
+        var updatedProjectDataStub = {
+            mobilecaddy1__Description__c: 'New Description',
+            Name: 'New Name'
+        };
+
+        $rootScope.$broadcast('updateProject:success', updatedProjectDataStub);
+
+        expect(projectDetailController.fullProjectDetails.projectDetails.Name).toEqual(updatedProjectDataStub.Name);
+        expect(projectDetailController.fullProjectDetails.projectDetails.mobilecaddy1__Description__c).toEqual(updatedProjectDataStub.mobilecaddy1__Description__c);
 
     }));
 
