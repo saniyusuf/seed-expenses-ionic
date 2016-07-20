@@ -62,15 +62,21 @@
             ProjectService.updateProjectDetails(projectDetails)
                 .then(function () {
                     $scope.close();
+                    $rootScope.$broadcast('updateProject:success',{
+                        mobilecaddy1__Description__c: projectDetails.mobilecaddy1__Description__c,
+                        Name: projectDetails.Name
+                    });
                     $ionicLoading.show({
-                        template: 'Your Changes Have Been Saved!',
-                        duration: 1200
+                        template: 'Changes Saved!',
+                        duration: 1200,
+                        noBackdrop: true
                     });
 
                 }, function () {
                     $ionicLoading.show({
                         template: "Couldn't Save Your Changes. Please Try Again Later",
-                        duration: 1200
+                        duration: 1200,
+                        noBackdrop: true
                     });
                 });
         }
