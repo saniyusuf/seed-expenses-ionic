@@ -58,7 +58,7 @@ describe('Edit Project Modal Service', function () {
                 fromTemplateUrlParams = {
                     templateUrl: templateUrl,
                     templateOptions: templateOptions
-                }
+                };
             }
         };
 
@@ -77,7 +77,7 @@ describe('Edit Project Modal Service', function () {
             $provide.value('PROJECT_LOCATION_TABLE_NAME', '');
             $provide.value('ProjectService', projectServiceMock);
         });
-
+        
     });
 
     beforeEach(inject(function (_EditProjectDetailsModal_) {
@@ -86,7 +86,7 @@ describe('Edit Project Modal Service', function () {
             show: angular.noop,
             remove: angular.noop,
             hide: angular.noop
-        }
+        };
     }));
 
 

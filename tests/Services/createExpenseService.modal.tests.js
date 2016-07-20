@@ -61,7 +61,7 @@ describe('Create Expense Modal Service', function () {
                 fromTemplateUrlParams = {
                     templateUrl: templateUrl,
                     templateOptions: templateOptions
-                }
+                };
             }
         };
 
@@ -84,7 +84,7 @@ describe('Create Expense Modal Service', function () {
         createTimeAndExpenseModal = _CreateTimeAndExpenseModal_;
         $ionicModalInstanceStub = {
             show: angular.noop
-        }
+        };
     }));
 
     it('Should Have CreateTimeAndExpenseModal To Be Defined', function () {

@@ -57,7 +57,7 @@ describe('Edit Expense Or Time Log Service Modal', function () {
                 fromTemplateUrlParams = {
                     templateUrl: templateUrl,
                     templateOptions: templateOptions
-                }
+                };
             }
         };
 
@@ -77,7 +77,7 @@ describe('Edit Expense Or Time Log Service Modal', function () {
         editExpenseOrTimeLogModal = _EditExpenseOrTimeLogModal_;
         $ionicModalInstanceStub = {
             show: angular.noop
-        }
+        };
     }));
 
 
