@@ -28,10 +28,12 @@
         vm.fullProjectDetails = {};
         vm.fullProjectDetails = FullProjectDetails;
 
-        $scope.$on('updateProject:success', function (e, data) {
+        var updateProjectsEventHandler = $scope.$on('updateProject:success', function (e, data) {
             vm.fullProjectDetails.projectDetails.Name = data.Name;
             vm.fullProjectDetails.projectDetails.mobilecaddy1__Description__c = data.mobilecaddy1__Description__c;
         });
+
+        $scope.$on('destroy', updateProjectsEventHandler);
     }
 
 })();
