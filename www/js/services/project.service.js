@@ -12,12 +12,7 @@
     ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ];
 
     function ProjectService($q, devUtils, _, logger, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
-        var getAllProjectsFromSmartStorePromise = $q.defer(),
-            getProjectDetailsFromSmartStorePromise = $q.defer(),
-            getProjectSummaryFromSmartStorePromise = $q.defer(),
-            getProjectLocationFromSmartStorePromise = $q.defer(),
-            getAllProjectDetailsFromSmartStorePromise = $q.defer(),
-            getProjectSqlQuery,
+        var getProjectSqlQuery,
             getProjectExpensesSqlQuery,
             getProjectLocationSqlQuery;
 
@@ -36,12 +31,10 @@
         function getAllProjects() {
             return devUtils.readRecords(PROJECTS_TABLE_NAME, [])
                 .then(function (projectsRecordsSuccessResponse) {
-                    getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
-                    return getAllProjectsFromSmartStorePromise.promise;
+                    return $q.resolve(projectsRecordsSuccessResponse.records);
 
                 }, function (projectsRecordsFailureResponse) {
-                    getAllProjectsFromSmartStorePromise.reject(projectsRecordsFailureResponse);
-                    return getAllProjectsFromSmartStorePromise.promise;
+                    return $q.reject(projectsRecordsFailureResponse);
                 });
         }
 
@@ -58,12 +51,11 @@
             return devUtils.smartSql(getProjectExpensesSqlQuery)
                 .then(function (timeAndExpenseProjectsSuccessResponse) {
                     if(!timeAndExpenseProjectsSuccessResponse.records.length || timeAndExpenseProjectsSuccessResponse.records.length < 1){
-                        getProjectSummaryFromSmartStorePromise.resolve({
+                        return $q.resolve({
                             projectTimeTotal: projectTimeTotal,
                             projectExpensesTotal: projectExpensesTotal
                         });
 
-                        return getProjectSummaryFromSmartStorePromise.promise;
                     }
 
                     timeAndExpenseProjects = _.where(
@@ -81,15 +73,13 @@
                         }
                     });
 
-                    getProjectSummaryFromSmartStorePromise.resolve({
+                    return $q.resolve({
                         projectTimeTotal: projectTimeTotal,
                         projectExpensesTotal: projectExpensesTotal
                     });
-                    return getProjectSummaryFromSmartStorePromise.promise;
 
                 }, function (timeAndExpenseProjectsFailureResponse) {
-                    getProjectSummaryFromSmartStorePromise.reject(timeAndExpenseProjectsFailureResponse);
-                    return getProjectSummaryFromSmartStorePromise.promise;
+                    return $q.reject(timeAndExpenseProjectsFailureResponse);
                 });
 
         }
@@ -102,12 +92,10 @@
             return devUtils.smartSql(getProjectSqlQuery)
                 .then(function (projectSuccessResponse) {
                     logger.log('Successfully Got Project Detail -> ', projectSuccessResponse.records[0]);
-                    getProjectDetailsFromSmartStorePromise.resolve(projectSuccessResponse.records[0]);
-                    return getProjectDetailsFromSmartStorePromise.promise;
+                    return $q.resolve(projectSuccessResponse.records[0]);
 
                 }, function (projectFailureResponse) {
-                    getProjectDetailsFromSmartStorePromise.reject(projectFailureResponse);
-                    return getProjectDetailsFromSmartStorePromise.promise;
+                    return  $q.reject(projectFailureResponse);
                 });
         }
 
@@ -120,13 +108,11 @@
             return devUtils.smartSql(getProjectLocationSqlQuery)
                 .then(function (projectLocationSuccessResponse) {
                     logger.log('Project Location Successfully Gotten -> ', projectLocationSuccessResponse.records[0]);
-                    getProjectLocationFromSmartStorePromise.resolve(projectLocationSuccessResponse.records[0]);
-                    return getProjectLocationFromSmartStorePromise.promise;
+                    return $q.resolve(projectLocationSuccessResponse.records[0]);
 
                 }, function (projectLocationFailureResponse) {
                     logger.log('Failed To Get Project Location -> ', projectLocationFailureResponse);
-                    getProjectLocationFromSmartStorePromise.reject(projectLocationFailureResponse);
-                    return getProjectLocationFromSmartStorePromise.promise;
+                    return $q.reject(projectLocationFailureResponse);
                 });
         }
 
@@ -143,12 +129,10 @@
                     fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
                     fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
 
-                    getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
-                    return getAllProjectDetailsFromSmartStorePromise.promise;
+                    return $q.resolve(fullProjectDetails);
 
                 }, function (fullProjectDetailFailureResponse) {
-                    getAllProjectDetailsFromSmartStorePromise.reject(fullProjectDetailFailureResponse);
-                    return getAllProjectDetailsFromSmartStorePromise.promise;
+                    return $q.reject(fullProjectDetailFailureResponse);
                 });
         }
 
