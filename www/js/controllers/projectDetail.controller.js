@@ -9,9 +9,9 @@
         .module('starter.controllers')
         .controller('ProjectDetailController', ProjectDetailController);
 
-    ProjectDetailController.$inject = ['FullProjectDetails', 'CreateTimeAndExpenseModal', '$stateParams', 'EditProjectDetailsModal'];
+    ProjectDetailController.$inject = ['$scope', 'FullProjectDetails', 'CreateTimeAndExpenseModal', '$stateParams', 'EditProjectDetailsModal'];
 
-    function ProjectDetailController(FullProjectDetails, CreateTimeAndExpenseModal, $stateParams, EditProjectDetailsModal) {
+    function ProjectDetailController($scope, FullProjectDetails, CreateTimeAndExpenseModal, $stateParams, EditProjectDetailsModal) {
         var vm = this;
 
         vm.openCreateNewExpenseModal = function () {
@@ -27,6 +27,11 @@
 
         vm.fullProjectDetails = {};
         vm.fullProjectDetails = FullProjectDetails;
+
+        $scope.$on('updateProject:success', function (e, data) {
+            vm.fullProjectDetails.projectDetails.Name = data.Name;
+            vm.fullProjectDetails.projectDetails.mobilecaddy1__Description__c = data.mobilecaddy1__Description__c;
+        });
     }
 
 })();
