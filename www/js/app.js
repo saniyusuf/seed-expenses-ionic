@@ -295,7 +295,8 @@ function myapp_callback(runUpInfo) {
 fullProjectDetails.$inject = ['$stateParams', 'logger', 'ProjectService', '$ionicLoading', '$q'];
 function fullProjectDetails($stateParams, logger, ProjectService, $ionicLoading, $q) {
   $ionicLoading.show({
-    template: "Getting Project's Details"
+    template: "Getting Project's Details",
+    delay: 100
   });
   return ProjectService.getFullProjectDetails($stateParams.projectID, $stateParams.projectLocationID)
       .then(function (projectDetails) {
