@@ -28,6 +28,7 @@
 
         function open(expenseOrTimeLog, expenseType) {
             var templateUrl = '';
+            $scope.expenseType = expenseType || 'expense';
             $scope.updateExpenseOrTimeLog = updateExpenseOrTimeLog;
 
             if(expenseType === 'time'){
@@ -42,7 +43,7 @@
                 $scope.expenseOrTimeLog = {
                     Id: expenseOrTimeLog.Id,
                     mobilecaddy1__Short_Description__c: expenseOrTimeLog.mobilecaddy1__Short_Description__c,
-                    mobilecaddy1__Expense_Amount__c: expenseOrTimeLog.mobilecaddy1__Expense_Amount__c,
+                    mobilecaddy1__Expense_Amount__c: parseFloat(expenseOrTimeLog.mobilecaddy1__Expense_Amount__c),
                     mobilecaddy1__Expense_Image__c: expenseOrTimeLog.mobilecaddy1__Expense_Image__c
                 };
                 templateUrl = editExpenseModalTemplateUrl;
@@ -73,6 +74,22 @@
             });
             ProjectService.updateExpenseOrTimeLog($scope.expenseOrTimeLog)
                 .then(function () {
+                    if($scope.expenseType === 'time'){
+                        $rootScope.$broadcast('timeLog:updateSuccess', {
+                            Id: $scope.expenseOrTimeLog.Id,
+                            mobilecaddy1__Short_Description__c: $scope.expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                            mobilecaddy1__Duration_Minutes__c: $scope.expenseOrTimeLog.mobilecaddy1__Duration_Minutes__c
+                        });
+                        
+                    } else {
+                        $rootScope.$broadcast('expense:updateSuccess', {
+                            Id: $scope.expenseOrTimeLog.Id,
+                            mobilecaddy1__Short_Description__c: $scope.expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                            mobilecaddy1__Expense_Amount__c: parseFloat($scope.expenseOrTimeLog.mobilecaddy1__Expense_Amount__c),
+                            mobilecaddy1__Expense_Image__c: $scope.expenseOrTimeLog.mobilecaddy1__Expense_Image__c
+                        });
+                    }
+                   
                     $scope.close();
                     $ionicLoading.show({
                         template: 'Your Changes Have Been Saved',
