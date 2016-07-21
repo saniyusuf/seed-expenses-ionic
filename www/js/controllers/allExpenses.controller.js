@@ -22,9 +22,13 @@
         }
 
         var updateTimeLogHandler = $scope.$on('expense:updateSuccess', function (e, data) {
-            var updatedExpenseIndex = _.findIndex(vm.allExpenses, function (expense) {
-                return expense.Id == data.Id;
-            });
+            var updatedExpenseIndex;
+            for(var i = 0; i < vm.allExpenses.length; i++){
+                if(vm.allExpenses[i].Id == data.Id){
+                    updatedExpenseIndex = i;
+                    break;
+                }
+            }
 
             vm.allExpenses[updatedExpenseIndex].mobilecaddy1__Short_Description__c = data.mobilecaddy1__Short_Description__c;
             vm.allExpenses[updatedExpenseIndex].mobilecaddy1__Expense_Amount__c = data.mobilecaddy1__Expense_Amount__c;

@@ -23,9 +23,13 @@
         }
 
         var updateExpenseHandler = $scope.$on('timeLog:updateSuccess', function (e, data) {
-            var updatedTimeLogIndex = _.findIndex(vm.allExpenses, function (expense) {
-                return expense.Id == data.Id;
-            });
+            var updatedTimeLogIndex;
+            for(var i = 0; i < vm.allTimeLogs.length; i++){
+                if(vm.allTimeLogs[i].Id == data.Id){
+                    updatedTimeLogIndex = i;
+                    break;
+                }
+            }
 
             vm.allTimeLogs[updatedTimeLogIndex].mobilecaddy1__Short_Description__c = data.mobilecaddy1__Short_Description__c;
             vm.allTimeLogs[updatedTimeLogIndex].mobilecaddy1__Duration_Minutes__c = data.mobilecaddy1__Duration_Minutes__c;
