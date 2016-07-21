@@ -21,7 +21,7 @@
             EditExpenseOrTimeLogModal.open(expense, 'expense');
         }
 
-        var updateTimeLogHandler = $scope.$on('timeLog:updateSuccess', function (e, data) {
+        var updateTimeLogHandler = $scope.$on('expense:updateSuccess', function (e, data) {
             var updatedExpenseIndex = _.findIndex(vm.allExpenses, function (expense) {
                 return expense.Id == data.Id;
             });
