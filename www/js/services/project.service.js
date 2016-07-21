@@ -63,7 +63,7 @@
                         {'mobilecaddy1__Project__c': projectID}
                     );
 
-                    angular.forEach(function (timeAndExpenseProject) {
+                    angular.forEach(timeAndExpenseProjects, function (timeAndExpenseProject) {
                         if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
                             projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
                         }
