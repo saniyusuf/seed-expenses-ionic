@@ -121,7 +121,7 @@
             };
 
             if(expenseType === 'time'){
-                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration;
+                newExpense.mobilecaddy1__Duration_Minutes__c = parseFloat($scope.newExpense.duration);
             } else {
                 newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
             }
