@@ -16,7 +16,8 @@
         <div class="expense-list full-image padding" ng-repeat="expense in allExpensesVM.allExpenses">
             <div class="row">
                 <div class="col col-20 item-text-wrap expense-description">
-                    <img ng-src="data:image/png;base64,{{expense.mobilecaddy1__Expense_Image__c}}" class="receipt-image">
+                    <img ng-if="expense.mobilecaddy1__Expense_Image__c !== ''" ng-src="data:image/png;base64,{{expense.mobilecaddy1__Expense_Image__c}}" class="receipt-image">
+                    <img ng-if="expense.mobilecaddy1__Expense_Image__c === ''" class="receipt-image">
                 </div>
 
                 <div class="col">
