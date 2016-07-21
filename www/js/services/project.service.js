@@ -65,11 +65,11 @@
 
                     angular.forEach(timeAndExpenseProjects, function (timeAndExpenseProject) {
                         if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
-                            projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
+                            projectTimeTotal += parseFloat(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c);
                         }
 
                         if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c)){
-                            projectExpensesTotal += timeAndExpenseProject.mobilecaddy1__Expense_Amount__c;
+                            projectExpensesTotal += parseFloat(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c);
                         }
                     });
 
