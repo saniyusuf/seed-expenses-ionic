@@ -10,9 +10,9 @@
         .module('starter.controllers')
         .controller('AllTimeLogsController', AllTimeLogsController);
 
-    AllTimeLogsController.$inject = ['AllTimeLogs', 'EditExpenseOrTimeLogModal'];
+    AllTimeLogsController.$inject = ['$scope', 'AllTimeLogs', 'EditExpenseOrTimeLogModal'];
 
-    function AllTimeLogsController(AllTimeLogs, EditExpenseOrTimeLogModal) {
+    function AllTimeLogsController($scope, AllTimeLogs, EditExpenseOrTimeLogModal) {
         var vm = this;
 
         vm.allTimeLogs = AllTimeLogs;
