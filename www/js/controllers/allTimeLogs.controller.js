@@ -21,6 +21,17 @@
         function openEditTimeLogModal(timeLog) {
             EditExpenseOrTimeLogModal.open(timeLog, 'time');
         }
+
+        var updateExpenseHandler = $scope.$on('timeLog:updateSuccess', function (e, data) {
+            var updatedTimeLogIndex = _.findIndex(vm.allExpenses, function (expense) {
+                return expense.Id == data.Id;
+            });
+
+            vm.allTimeLogs[updatedTimeLogIndex].mobilecaddy1__Short_Description__c = data.mobilecaddy1__Short_Description__c;
+            vm.allTimeLogs[updatedTimeLogIndex].mobilecaddy1__Duration_Minutes__c = data.mobilecaddy1__Duration_Minutes__c;
+        });
+
+        $scope.$on('destroy', updateExpenseHandler);
     }
 
 })();
