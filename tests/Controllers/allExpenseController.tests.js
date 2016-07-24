@@ -3,7 +3,7 @@
  */
 
 
-describe('All Expenses Controller Test', function () {
+fdescribe('All Expenses Controller Test', function () {
     var allExpenseStub,
         editExpenseOrTimeLogModalStub = {
             open: function (expense, type) {}
@@ -11,16 +11,18 @@ describe('All Expenses Controller Test', function () {
         controllerDependencies;
     
     beforeEach(module('starter.controllers'));
-    beforeEach(function () {
+    beforeEach(inject(function (_$rootScope_) {
+        var $rootScope = _$rootScope_;
         allExpenseStub = [{
             id: '1',
             description: 'dummy test mock data'
         }];
         controllerDependencies = {
             AllExpenses: allExpenseStub,
-            EditExpenseOrTimeLogModal: editExpenseOrTimeLogModalStub
+            EditExpenseOrTimeLogModal: editExpenseOrTimeLogModalStub,
+            $scope: $rootScope.$new()
         };
-    });
+    }));
 
     it('Should Be Defined', inject(function ($controller) {
         var allExpenseController = $controller('AllExpensesController', controllerDependencies);
