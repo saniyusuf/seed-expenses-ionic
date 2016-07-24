@@ -122,7 +122,7 @@ describe('Edit Expense Or Time Log Service Modal', function () {
         var expenseStub = {
             Id: '',
             mobilecaddy1__Short_Description__c: '',
-            mobilecaddy1__Expense_Amount__c: '',
+            mobilecaddy1__Expense_Amount__c: 12.1,
             mobilecaddy1__Expense_Image__c: ''
         };
 
@@ -146,7 +146,7 @@ describe('Edit Expense Or Time Log Service Modal', function () {
         var expenseStub = {
             Id: '',
             mobilecaddy1__Short_Description__c: '',
-            mobilecaddy1__Expense_Amount__c: '',
+            mobilecaddy1__Expense_Amount__c: 12.1,
             mobilecaddy1__Expense_Image__c: ''
         };
 
