@@ -10,16 +10,17 @@ describe('All Time Logs Controller', function () {
         controllerDependencies;
 
     beforeEach(module('starter.controllers'));
-    beforeEach(function () {
+    beforeEach(inject(function ($rootScope) {
         allTimeLogStub = [{
             id: '1',
             duration: 1234
         }];
         controllerDependencies = {
             AllTimeLogs: allTimeLogStub,
-            EditExpenseOrTimeLogModal: editExpenseOrTimeLogModalStub
+            EditExpenseOrTimeLogModal: editExpenseOrTimeLogModalStub,
+            $scope: $rootScope.$new()
         };
-    });
+    }));
 
     it('Should Be Defined', inject(function ($controller) {
         var allTimeLogsController = $controller('AllTimeLogsController', controllerDependencies);
