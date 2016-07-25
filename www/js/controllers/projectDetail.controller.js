@@ -33,7 +33,15 @@
             vm.fullProjectDetails.projectDetails.mobilecaddy1__Description__c = data.mobilecaddy1__Description__c;
         });
 
-        $scope.$on('destroy', updateProjectsEventHandler);
+        var updateProjectSummaryEventHandler = $scope.$on('projectSummaryUpdate:success', function (e, data) {
+            if(data.expenseType == 'time'){
+                vm.fullProjectDetails.projectSummary.projectTimeTotal = parseFloat(vm.fullProjectDetails.projectSummary.projectTimeTotal) + parseFloat(data.newTime);
+            } else {
+                vm.fullProjectDetails.projectSummary.projectExpensesTotal = parseFloat(vm.fullProjectDetails.projectSummary.projectExpensesTotal) + parseFloat(data.newAmount);
+            }
+        });
+
+        $scope.$on('destroy', updateProjectsEventHandler, updateProjectSummaryEventHandler);
     }
 
 })();
