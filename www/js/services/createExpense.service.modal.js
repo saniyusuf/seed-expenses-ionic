@@ -122,16 +122,26 @@
 
             if(expenseType === 'time'){
                 newExpense.mobilecaddy1__Duration_Minutes__c = parseFloat($scope.newExpense.duration);
-            } else {
-                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
             }
 
             ProjectService.createNewExpenseOrTimeLog(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
+
+                    var projectSummaryUpdate = {};
+                    if(expenseType === 'time'){
+                        projectSummaryUpdate.newTime =  newExpense.mobilecaddy1__Duration_Minutes__c;
+                        projectSummaryUpdate.expenseType =  'time';
+
+                    } else {
+                        projectSummaryUpdate.newAmount =  newExpense.mobilecaddy1__Expense_Amount__c;
+                        projectSummaryUpdate.expenseType =  'expense';
+                    }
+                    $rootScope.$broadcast('projectSummaryUpdate:success', projectSummaryUpdate);
+
                     $scope.close();
                     $ionicLoading.show({
-                        template: 'Expense Successfully Created!',
+                        template: 'Log Successfully Created!',
                         duration: 1200
                     });
 
@@ -139,7 +149,7 @@
                     logger.log('Failed To Create New Expense -> ', newExpenseFailureResponse);
                     $ionicLoading.hide();
                     $ionicLoading.show({
-                        template: 'Expense Entry Not Created. Please Try Again',
+                        template: 'Log Entry Not Created. Please Try Again',
                         duration: 1200
                     });
                 });
