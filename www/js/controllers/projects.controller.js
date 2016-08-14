@@ -40,15 +40,12 @@
             vm.projectSearch.searchTerm = '';
         };
 
-        if(SyncService.getSyncState() == 'Complete'){
-            getAllProjectsAfterInitialSync();
-        }else {
-            $scope.$on('syncTables', function (event, args) {
-                if(args.result == 'InitialLoadComplete'){
-                    getAllProjectsAfterInitialSync();
-                }
-            });
-        }
+
+        var unsubscribeSyncComplete = $scope.$on('syncTables', function (event, args) {
+            if(args.result == 'Complete'){
+                getAllProjectsAfterInitialSync();
+            }
+        });
 
         function getAllProjectsAfterInitialSync() {
             $ionicLoading.show({
@@ -143,6 +140,7 @@
         function onScopeDestroyed() {
             $interval.cancel(isSyncRequiredInterval);
             isSyncRequiredInterval = undefined;
+            unsubscribeSyncComplete();
         }
 
         function handleSyncTables(event, args) {
