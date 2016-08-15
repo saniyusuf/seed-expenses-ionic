@@ -300,17 +300,27 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             };
 
             if(expenseType === 'time'){
-                newExpense.mobilecaddy1__Duration_Minutes__c = $scope.newExpense.duration;
-            } else {
-                newExpense.mobilecaddy1__Expense_Amount__c = $scope.newExpense.amount;
+                newExpense.mobilecaddy1__Duration_Minutes__c = parseFloat($scope.newExpense.duration);
             }
 
             ProjectService.createNewExpenseOrTimeLog(newExpense)
                 .then(function (newExpenseSuccessResponse) {
                     logger.log('Successfully Created New Expense -> ', newExpenseSuccessResponse);
+
+                    var projectSummaryUpdate = {};
+                    if(expenseType === 'time'){
+                        projectSummaryUpdate.newTime =  newExpense.mobilecaddy1__Duration_Minutes__c;
+                        projectSummaryUpdate.expenseType =  'time';
+
+                    } else {
+                        projectSummaryUpdate.newAmount =  newExpense.mobilecaddy1__Expense_Amount__c;
+                        projectSummaryUpdate.expenseType =  'expense';
+                    }
+                    $rootScope.$broadcast('projectSummaryUpdate:success', projectSummaryUpdate);
+
                     $scope.close();
                     $ionicLoading.show({
-                        template: 'Expense Successfully Created!',
+                        template: 'Log Successfully Created!',
                         duration: 1200
                     });
 
@@ -318,7 +328,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
                     logger.log('Failed To Create New Expense -> ', newExpenseFailureResponse);
                     $ionicLoading.hide();
                     $ionicLoading.show({
-                        template: 'Expense Entry Not Created. Please Try Again',
+                        template: 'Log Entry Not Created. Please Try Again',
                         duration: 1200
                     });
                 });
@@ -862,6 +872,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
 
         function open(expenseOrTimeLog, expenseType) {
             var templateUrl = '';
+            $scope.expenseType = expenseType || 'expense';
             $scope.updateExpenseOrTimeLog = updateExpenseOrTimeLog;
 
             if(expenseType === 'time'){
@@ -876,7 +887,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
                 $scope.expenseOrTimeLog = {
                     Id: expenseOrTimeLog.Id,
                     mobilecaddy1__Short_Description__c: expenseOrTimeLog.mobilecaddy1__Short_Description__c,
-                    mobilecaddy1__Expense_Amount__c: expenseOrTimeLog.mobilecaddy1__Expense_Amount__c,
+                    mobilecaddy1__Expense_Amount__c: parseFloat(expenseOrTimeLog.mobilecaddy1__Expense_Amount__c),
                     mobilecaddy1__Expense_Image__c: expenseOrTimeLog.mobilecaddy1__Expense_Image__c
                 };
                 templateUrl = editExpenseModalTemplateUrl;
@@ -907,6 +918,22 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             });
             ProjectService.updateExpenseOrTimeLog($scope.expenseOrTimeLog)
                 .then(function () {
+                    if($scope.expenseType === 'time'){
+                        $rootScope.$broadcast('timeLog:updateSuccess', {
+                            Id: $scope.expenseOrTimeLog.Id,
+                            mobilecaddy1__Short_Description__c: $scope.expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                            mobilecaddy1__Duration_Minutes__c: $scope.expenseOrTimeLog.mobilecaddy1__Duration_Minutes__c
+                        });
+                        
+                    } else {
+                        $rootScope.$broadcast('expense:updateSuccess', {
+                            Id: $scope.expenseOrTimeLog.Id,
+                            mobilecaddy1__Short_Description__c: $scope.expenseOrTimeLog.mobilecaddy1__Short_Description__c,
+                            mobilecaddy1__Expense_Amount__c: parseFloat($scope.expenseOrTimeLog.mobilecaddy1__Expense_Amount__c),
+                            mobilecaddy1__Expense_Image__c: $scope.expenseOrTimeLog.mobilecaddy1__Expense_Image__c
+                        });
+                    }
+                   
                     $scope.close();
                     $ionicLoading.show({
                         template: 'Your Changes Have Been Saved',
@@ -947,7 +974,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
                 scope: $scope,
                 focusFirstInput: true
             },
-        editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
+            editProjectDetailsModalTemplateUrl = RESOURCE_ROOT + 'templates/editProjectDetail.html';
 
         var editProjectDetailsModal = {
             open: open
@@ -991,15 +1018,21 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             ProjectService.updateProjectDetails(projectDetails)
                 .then(function () {
                     $scope.close();
+                    $rootScope.$broadcast('updateProject:success',{
+                        mobilecaddy1__Description__c: projectDetails.mobilecaddy1__Description__c,
+                        Name: projectDetails.Name
+                    });
                     $ionicLoading.show({
-                        template: 'Your Changes Have Been Saved!',
-                        duration: 1200
+                        template: 'Changes Saved!',
+                        duration: 1200,
+                        noBackdrop: true
                     });
 
                 }, function () {
                     $ionicLoading.show({
                         template: "Couldn't Save Your Changes. Please Try Again Later",
-                        duration: 1200
+                        duration: 1200,
+                        noBackdrop: true
                     });
                 });
         }
@@ -1446,12 +1479,7 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
     ProjectService.$inject = ['$q', 'devUtils', '_', 'logger', 'SyncService', 'PROJECTS_TABLE_NAME', 'PROJECT_EXPENSES_TABLE_NAME', 'PROJECT_LOCATION_TABLE_NAME' ];
 
     function ProjectService($q, devUtils, _, logger, SyncService, PROJECTS_TABLE_NAME, PROJECT_EXPENSES_TABLE_NAME, PROJECT_LOCATION_TABLE_NAME) {
-        var getAllProjectsFromSmartStorePromise = $q.defer(),
-            getProjectDetailsFromSmartStorePromise = $q.defer(),
-            getProjectSummaryFromSmartStorePromise = $q.defer(),
-            getProjectLocationFromSmartStorePromise = $q.defer(),
-            getAllProjectDetailsFromSmartStorePromise = $q.defer(),
-            getProjectSqlQuery,
+        var getProjectSqlQuery,
             getProjectExpensesSqlQuery,
             getProjectLocationSqlQuery;
 
@@ -1470,12 +1498,10 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
         function getAllProjects() {
             return devUtils.readRecords(PROJECTS_TABLE_NAME, [])
                 .then(function (projectsRecordsSuccessResponse) {
-                    getAllProjectsFromSmartStorePromise.resolve(projectsRecordsSuccessResponse.records);
-                    return getAllProjectsFromSmartStorePromise.promise;
+                    return $q.resolve(projectsRecordsSuccessResponse.records);
 
                 }, function (projectsRecordsFailureResponse) {
-                    getAllProjectsFromSmartStorePromise.reject(projectsRecordsFailureResponse);
-                    return getAllProjectsFromSmartStorePromise.promise;
+                    return $q.reject(projectsRecordsFailureResponse);
                 });
         }
 
@@ -1492,12 +1518,11 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             return devUtils.smartSql(getProjectExpensesSqlQuery)
                 .then(function (timeAndExpenseProjectsSuccessResponse) {
                     if(!timeAndExpenseProjectsSuccessResponse.records.length || timeAndExpenseProjectsSuccessResponse.records.length < 1){
-                        getProjectSummaryFromSmartStorePromise.resolve({
+                        return $q.resolve({
                             projectTimeTotal: projectTimeTotal,
                             projectExpensesTotal: projectExpensesTotal
                         });
 
-                        return getProjectSummaryFromSmartStorePromise.promise;
                     }
 
                     timeAndExpenseProjects = _.where(
@@ -1505,25 +1530,23 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
                         {'mobilecaddy1__Project__c': projectID}
                     );
 
-                    angular.forEach(function (timeAndExpenseProject) {
+                    angular.forEach(timeAndExpenseProjects, function (timeAndExpenseProject) {
                         if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c)){
-                            projectTimeTotal += timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c;
+                            projectTimeTotal += parseFloat(timeAndExpenseProject.mobilecaddy1__Duration_Minutes__c);
                         }
 
                         if (!isNullOrUndefined(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c)){
-                            projectExpensesTotal += timeAndExpenseProject.mobilecaddy1__Expense_Amount__c;
+                            projectExpensesTotal += parseFloat(timeAndExpenseProject.mobilecaddy1__Expense_Amount__c);
                         }
                     });
 
-                    getProjectSummaryFromSmartStorePromise.resolve({
+                    return $q.resolve({
                         projectTimeTotal: projectTimeTotal,
                         projectExpensesTotal: projectExpensesTotal
                     });
-                    return getProjectSummaryFromSmartStorePromise.promise;
 
                 }, function (timeAndExpenseProjectsFailureResponse) {
-                    getProjectSummaryFromSmartStorePromise.reject(timeAndExpenseProjectsFailureResponse);
-                    return getProjectSummaryFromSmartStorePromise.promise;
+                    return $q.reject(timeAndExpenseProjectsFailureResponse);
                 });
 
         }
@@ -1536,12 +1559,10 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             return devUtils.smartSql(getProjectSqlQuery)
                 .then(function (projectSuccessResponse) {
                     logger.log('Successfully Got Project Detail -> ', projectSuccessResponse.records[0]);
-                    getProjectDetailsFromSmartStorePromise.resolve(projectSuccessResponse.records[0]);
-                    return getProjectDetailsFromSmartStorePromise.promise;
+                    return $q.resolve(projectSuccessResponse.records[0]);
 
                 }, function (projectFailureResponse) {
-                    getProjectDetailsFromSmartStorePromise.reject(projectFailureResponse);
-                    return getProjectDetailsFromSmartStorePromise.promise;
+                    return  $q.reject(projectFailureResponse);
                 });
         }
 
@@ -1554,13 +1575,11 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
             return devUtils.smartSql(getProjectLocationSqlQuery)
                 .then(function (projectLocationSuccessResponse) {
                     logger.log('Project Location Successfully Gotten -> ', projectLocationSuccessResponse.records[0]);
-                    getProjectLocationFromSmartStorePromise.resolve(projectLocationSuccessResponse.records[0]);
-                    return getProjectLocationFromSmartStorePromise.promise;
+                    return $q.resolve(projectLocationSuccessResponse.records[0]);
 
                 }, function (projectLocationFailureResponse) {
                     logger.log('Failed To Get Project Location -> ', projectLocationFailureResponse);
-                    getProjectLocationFromSmartStorePromise.reject(projectLocationFailureResponse);
-                    return getProjectLocationFromSmartStorePromise.promise;
+                    return $q.reject(projectLocationFailureResponse);
                 });
         }
 
@@ -1577,12 +1596,10 @@ angular.module('starter.services', ['underscore', 'devUtils', 'vsnUtils', 'smart
                     fullProjectDetails.projectSummary = fullProjectDetailsSuccessResponse.projectSummaryPromise;
                     fullProjectDetails.projectLocation = fullProjectDetailsSuccessResponse.projectLocationPromise;
 
-                    getAllProjectDetailsFromSmartStorePromise.resolve(fullProjectDetails);
-                    return getAllProjectDetailsFromSmartStorePromise.promise;
+                    return $q.resolve(fullProjectDetails);
 
                 }, function (fullProjectDetailFailureResponse) {
-                    getAllProjectDetailsFromSmartStorePromise.reject(fullProjectDetailFailureResponse);
-                    return getAllProjectDetailsFromSmartStorePromise.promise;
+                    return $q.reject(fullProjectDetailFailureResponse);
                 });
         }
 

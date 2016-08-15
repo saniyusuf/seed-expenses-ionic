@@ -24,13 +24,8 @@ module.exports = function(config) {
       '../node_modules/es6-promise/dist/es6-promise.js',
       '../node_modules/angular-mocks/angular-mocks.js',
       '../node_modules/underscore/underscore-min.js',
-      // '**/syncService.tests.js',
-      'Services/userService.tests.js',
       'Controllers/**.js',
-      'Services/createExpenseService.modal.tests.js',
-      'Services/editExpenseOrTimeLogService.modal.tests.js',
-      'Services/editProjectModalService.modal.tests.js',
-      // '**/*tests.js',
+      'Services/**.js',
       '../node_modules/mobilecaddy-codeflow/js/mcUtilsMock.js'
     ],
 
